@@ -16,6 +16,10 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    game.reset()
+
             if event.type == pygame.MOUSEBUTTONDOWN and not game.game_over:
                 mouse_x = event.pos[0]
                 col = renderer.get_column_from_mouse(mouse_x)
