@@ -1,29 +1,29 @@
+import pygame
 from game.connect4_env import Connect4
+from visuals.renderer import Connect4Renderer
 
 
 def main():
     game = Connect4()
+    renderer = Connect4Renderer(game)
 
-    while not game.game_over:
-        game.print_board()
-        print(f"\nPlayer {game.current_player}'s turn")
-        print("Valid moves:", game.get_valid_moves())
+    running = True
 
-        try:
-            col = int(input("Choose a column (0-6): "))
-        except ValueError:
-            print("Please enter a number from 0 to 6.")
-            continue
+    while running:
+        renderer.draw_board()
 
-        if not game.drop_piece(col):
-            print("Invalid move. Try again.")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    game.print_board()
+            if event.type == pygame.MOUSEBUTTONDOWN and not game.game_over:
+                mouse_x = event.pos[0]
+                col = renderer.get_column_from_mouse(mouse_x)
 
-    if game.winner == 0:
-        print("\nIt's a draw!")
-    else:
-        print(f"\nPlayer {game.winner} wins!")
+                if 0 <= col < game.COLS:
+                    game.drop_piece(col)
+
+    pygame.quit()
 
 
 if __name__ == "__main__":

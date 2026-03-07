@@ -44,6 +44,7 @@ class Connect4:
             return False
 
         row = self.get_next_open_row(col)
+        print(f"Dropping piece in column {col}, row {row}")
         if row is None:
             return False
 
