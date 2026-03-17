@@ -1,3 +1,4 @@
+
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -9,3 +10,11 @@ UserSettings/
 .vsconfig
 *.csproj
 *.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
