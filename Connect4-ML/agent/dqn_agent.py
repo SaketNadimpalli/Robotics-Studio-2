@@ -12,11 +12,11 @@ class DQNAgent:
         input_size=42,
         hidden_size=128,
         output_size=7,
-        lr=0.001,
-        gamma=0.99,
+        lr=0.00005,
+        gamma=0.95,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.995,
+        epsilon_decay=0.9995,
         batch_size=64,
         buffer_capacity=10000
     ):
@@ -88,6 +88,7 @@ class DQNAgent:
         loss = self.loss_fn(current_q, target_q)
         self.optimizer.zero_grad()
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.policy_net.parameters(), 1.0)  
         self.optimizer.step()
 
         # Decay epsilon

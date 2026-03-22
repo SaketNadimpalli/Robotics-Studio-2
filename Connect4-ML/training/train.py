@@ -12,7 +12,7 @@ from agent.dqn_agent import DQNAgent
 # ─────────────────────────────────────────
 EPISODES        = 1000   # total games to train on
 TARGET_UPDATE   = 10     # sync target network every N episodes
-SAVE_PATH       = "models/connect4_dqn.pth"
+SAVE_PATH       = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models", "connect4_dqn.pth")
 PRINT_EVERY     = 50     # print stats every N episodes
 
 def train():
@@ -51,6 +51,8 @@ def train():
                     reward = -1.0   # current player just lost
                 else:
                     reward = 1.0    # current player just won
+            else:
+                reward = 0.0    # non-terminal move
 
             # ── Store experience ────────────────────────────
             agent.remember(state, action, reward, next_state, done)
