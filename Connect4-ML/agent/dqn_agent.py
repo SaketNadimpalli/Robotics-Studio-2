@@ -16,7 +16,7 @@ class DQNAgent:
         gamma=0.95,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.9995,
+        epsilon_decay=0.9999,
         batch_size=64,
         buffer_capacity=10000
     ):
@@ -44,7 +44,7 @@ class DQNAgent:
             return np.random.choice(valid_moves)
 
         # Exploit - pick the best valid move
-        state_tensor = torch.FloatTensor(state.flatten()).unsqueeze(0)
+        state_tensor = torch.FloatTensor(self.normalise_state(state)).unsqueeze(0)
         with torch.no_grad():
             q_values = self.policy_net(state_tensor).squeeze()
 
@@ -54,10 +54,10 @@ class DQNAgent:
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.push(
-            state.flatten(),
+            self.normalise_state(state).flatten(),
             action,
             reward,
-            next_state.flatten(),
+            self.normalise_state(next_state).flatten(),
             done
         )
 
@@ -115,4 +115,7 @@ class DQNAgent:
         self.target_net.load_state_dict(checkpoint['target_net'])
         self.optimizer.load_state_dict(checkpoint['optimizer'])
         self.epsilon = checkpoint['epsilon']
+    
+    def normalise_state(self, state):
+        return (state.flatten() / 2.0) - 0.5
 
