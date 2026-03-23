@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from game.connect4_env import Connect4
 from agent.dqn_agent import DQNAgent
+from training.reward_shaper import shape_reward
 
 # ─────────────────────────────────────────
 #  HYPERPARAMETERS
@@ -15,7 +16,7 @@ TARGET_UPDATE = 10
 SAVE_PATH     = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models", "connect4_dqn.pth")
 PRINT_EVERY   = 100
 
-def evaluate(agent, game, num_games=100):
+def evaluate(agent, game, num_games=200):
     wins = 0
     for _ in range(num_games):
         state = game.reset()
@@ -40,8 +41,8 @@ def train():
 
     # ── Early stopping variables ──────────
     best_win_rate = 0.0
-    patience   = 10
-    no_improve = 0
+    patience      = 10
+    no_improve    = 0
 
     # ── Tracking stats ────────────────────
     episode_rewards = []
@@ -51,8 +52,8 @@ def train():
     loss_count      = 0
 
     print("🚀 Starting Training...")
-    print(f"{'Episode':<10} {'Winner':<10} {'Reward':<10} {'Epsilon':<10} {'Loss':<10}")
-    print("-" * 55)
+    print(f"{'Episode':<10} {'Winner':<10} {'Reward':<10} {'Epsilon':<10} {'Loss':<10} {'WinRate':<10}")
+    print("-" * 70)
 
     for episode in range(1, EPISODES + 1):
         state        = game.reset()
@@ -74,14 +75,18 @@ def train():
 
             next_state, reward, done = game.step(action)
 
-            if done and game.winner != 0:
-                if game.winner == game.current_player:
-                    reward = -1.0
+            # ── Phase 2 Reward Shaping ────────────────────
+            if done:
+                if game.winner == 0:
+                    reward = 0.5        # draw
+                elif game.winner == game.current_player:
+                    reward = -1.0       # lost
                 else:
-                    reward = 1.0
+                    reward = 1.0        # won
             else:
-                reward = 0.0
+                reward = shape_reward(game.board, game.current_player)
 
+            # ── These MUST be inside while loop! ──────────
             agent.remember(state, action, reward, next_state, done)
             loss = agent.train()
             if loss is not None:
@@ -111,7 +116,7 @@ def train():
             avg_reward = np.mean(episode_rewards[-PRINT_EVERY:])
             avg_loss   = np.mean(episode_losses[-PRINT_EVERY:])
             winner_str = "Player 1" if game.winner == 1 else "Draw" if game.winner == 0 else "Player 2"
-            win_rate   = evaluate(agent, game, num_games=200)
+            win_rate   = evaluate(agent, game)
 
             print(
                 f"{episode:<10} "
@@ -119,16 +124,16 @@ def train():
                 f"{avg_reward:<10.3f} "
                 f"{agent.epsilon:<10.3f} "
                 f"{avg_loss:<10.4f} "
-                f"{win_rate:<10.2f}%"
+                f"{win_rate:.2f}%"
             )
 
             # ── Save best model ───────────────────────────
             if win_rate > best_win_rate:
                 best_win_rate = win_rate
-                no_improve = 0
+                no_improve    = 0
                 os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
                 agent.save(SAVE_PATH)
-                print(f"  💾 New best model saved! Win Rate: {best_win_rate:.2f}%")
+                print(f"  💾 New best model! Win rate: {best_win_rate:.2f}%")
             else:
                 no_improve += 1
                 print(f"  ⚠️ No improvement {no_improve}/{patience}")
