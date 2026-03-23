@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from game.connect4_env import Connect4
 from agent.dqn_agent import DQNAgent
-from training.reward_shaper import shape_reward
+from training.reward_shaper import shape_reward, get_winning_moves, scan_board, centre_reward
 
 # ─────────────────────────────────────────
 #  HYPERPARAMETERS
@@ -39,12 +39,10 @@ def train():
     game  = Connect4()
     agent = DQNAgent()
 
-    # ── Early stopping variables ──────────
     best_win_rate = 0.0
     patience      = 10
     no_improve    = 0
 
-    # ── Tracking stats ────────────────────
     episode_rewards = []
     episode_losses  = []
     win_count       = 0
@@ -62,10 +60,10 @@ def train():
         done         = False
 
         while not done:
-            valid_moves = game.get_valid_moves()
+            valid_moves    = game.get_valid_moves()
+            current_player = game.current_player  # ✅ store BEFORE step!
 
-            # Player 1 = agent, Player 2 = random opponent 30% of time
-            if game.current_player == 1:
+            if current_player == 1:
                 action = agent.select_action(state, valid_moves)
             else:
                 if np.random.rand() < 0.3:
@@ -73,20 +71,39 @@ def train():
                 else:
                     action = agent.select_action(state, valid_moves)
 
+            # ── Check threats BEFORE move executes ────────
+            opponent        = 2 if current_player == 1 else 1
+            opp_win_moves   = get_winning_moves(game.board, opponent)
+            agent_win_moves = get_winning_moves(game.board, current_player)
+
             next_state, reward, done = game.step(action)
 
-            # ── Phase 2 Reward Shaping ────────────────────
+            # ── Reward Shaping ─────────────────────────────
             if done:
                 if game.winner == 0:
-                    reward = 0.5        # draw
-                elif game.winner == game.current_player:
-                    reward = -1.0       # lost
+                    reward = 0.5
+                elif game.winner == current_player:
+                    reward = -1.0
                 else:
-                    reward = 1.0        # won
+                    reward = 1.0
             else:
-                reward = shape_reward(game.board, game.current_player)
+                # Base shaped reward
+                reward  = scan_board(game.board, current_player) * 0.1
+                reward += centre_reward(game.board, current_player)
 
-            # ── These MUST be inside while loop! ──────────
+                # Defensive reward using PRE-MOVE threats ✅
+                if len(opp_win_moves) > 0:
+                    if action in opp_win_moves:
+                        reward += 0.6    # blocked winning move!
+                    else:
+                        reward -= 0.9    # missed block!
+
+                # Offensive reward
+                if action in agent_win_moves:
+                    reward += 0.8        # took winning move!
+
+                reward = float(np.clip(reward, -0.9, 0.9))
+
             agent.remember(state, action, reward, next_state, done)
             loss = agent.train()
             if loss is not None:
@@ -95,7 +112,6 @@ def train():
             total_reward += reward
             state         = next_state
 
-        # ── Track results ─────────────────────────────────
         if game.winner == 1:
             win_count += 1
         elif game.winner == 0:
@@ -107,11 +123,9 @@ def train():
         avg_loss = np.mean(total_loss) if total_loss else 0
         episode_losses.append(avg_loss)
 
-        # ── Sync target network ───────────────────────────
         if episode % TARGET_UPDATE == 0:
             agent.update_target_network()
 
-        # ── Print + early stopping ────────────────────────
         if episode % PRINT_EVERY == 0:
             avg_reward = np.mean(episode_rewards[-PRINT_EVERY:])
             avg_loss   = np.mean(episode_losses[-PRINT_EVERY:])
@@ -127,7 +141,6 @@ def train():
                 f"{win_rate:.2f}%"
             )
 
-            # ── Save best model ───────────────────────────
             if win_rate > best_win_rate:
                 best_win_rate = win_rate
                 no_improve    = 0
@@ -138,12 +151,10 @@ def train():
                 no_improve += 1
                 print(f"  ⚠️ No improvement {no_improve}/{patience}")
 
-            # ── Early stopping ────────────────────────────
             if no_improve >= patience and episode >= 1000:
                 print(f"\n🛑 Early stopping at episode {episode} — best win rate: {best_win_rate:.2f}%")
                 break
 
-    # ── Final summary ──────────────────────────────────────
     total_episodes = win_count + draw_count + loss_count
     print("\n✅ Training Complete!")
     print(f"📊 Results over {total_episodes} episodes:")
