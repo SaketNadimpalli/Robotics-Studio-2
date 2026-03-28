@@ -1025,6 +1025,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 169c9a0ca274c1f40a43c25958c0f2d3, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 169c9a0ca274c1f40a43c25958c0f2d3, type: 3}
       propertyPath: m_Name
       value: Connect4_Base
@@ -1166,9 +1170,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1202319288}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f331b37a9123a0c4eb587571cf880768, type: 3}
+  m_Script: {fileID: 11500000, guid: d2798c6d880492440a6ea93f41fff363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ROSInit
+  topicName: /test_topic
 --- !u!1001 &1279724740
 PrefabInstance:
   m_ObjectHideFlags: 0
