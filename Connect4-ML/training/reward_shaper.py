@@ -42,21 +42,25 @@ def scan_board(board, player):
     COLS   = 7
     reward = 0
 
+    # Horizontal
     for row in range(ROWS):
         for col in range(COLS - 3):
             window = list(board[row, col:col + 4])
             reward += score_window(window, player)
 
+    # Vertical
     for row in range(ROWS - 3):
         for col in range(COLS):
             window = [board[row + i][col] for i in range(4)]
             reward += score_window(window, player)
 
+    # Diagonal down-right
     for row in range(ROWS - 3):
         for col in range(COLS - 3):
             window = [board[row + i][col + i] for i in range(4)]
             reward += score_window(window, player)
 
+    # Diagonal up-right
     for row in range(3, ROWS):
         for col in range(COLS - 3):
             window = [board[row - i][col + i] for i in range(4)]
@@ -80,25 +84,29 @@ def centre_reward(board, player):
     return reward
 
 
-def check_win_on_board(board, player):      # ✅ moved up!
+def check_win_on_board(board, player):
     ROWS = 6
     COLS = 7
 
+    # Horizontal
     for row in range(ROWS):
         for col in range(COLS - 3):
             if all(board[row][col + i] == player for i in range(4)):
                 return True
 
+    # Vertical
     for row in range(ROWS - 3):
         for col in range(COLS):
             if all(board[row + i][col] == player for i in range(4)):
                 return True
 
+    # Diagonal down-right
     for row in range(ROWS - 3):
         for col in range(COLS - 3):
             if all(board[row + i][col + i] == player for i in range(4)):
                 return True
 
+    # Diagonal up-right
     for row in range(3, ROWS):
         for col in range(COLS - 3):
             if all(board[row - i][col + i] == player for i in range(4)):
@@ -107,7 +115,7 @@ def check_win_on_board(board, player):      # ✅ moved up!
     return False
 
 
-def get_winning_moves(board, player):       # ✅ moved up!
+def get_winning_moves(board, player):
     winning_cols = []
     ROWS         = 6
     COLS         = 7
@@ -134,7 +142,52 @@ def get_winning_moves(board, player):       # ✅ moved up!
     return winning_cols
 
 
-def defensive_reward(board, action, player):    # ✅ moved up!
+def detect_fork_threat(board, opponent):
+    """
+    Detects columns where if opponent plays there
+    they create TWO or more winning threats (fork!)
+    meaning you can only block one and they win the other!
+
+    Example:
+    _ _ 2 2 _ _ _
+    Opponent plays col 1 → _ 2 2 2 _ _ _ → can win col 0 OR col 4
+    Opponent plays col 4 → _ _ 2 2 2 _ _ → can win col 1 OR col 5
+    Both col 1 and col 4 are fork threats!
+    """
+    ROWS      = 6
+    COLS      = 7
+    fork_cols = []
+
+    for col in range(COLS):
+        # Skip full columns
+        if board[0][col] != 0:
+            continue
+
+        # Find where piece would land
+        row = None
+        for r in range(ROWS - 1, -1, -1):
+            if board[r][col] == 0:
+                row = r
+                break
+
+        if row is None:
+            continue
+
+        # Simulate opponent playing here
+        temp_board           = board.copy()
+        temp_board[row][col] = opponent
+
+        # Count winning moves opponent would have after this
+        winning_after = get_winning_moves(temp_board, opponent)
+
+        # If opponent creates 2+ winning threats → fork!
+        if len(winning_after) >= 2:
+            fork_cols.append(col)
+
+    return fork_cols
+
+
+def defensive_reward(board, action, player):
     opponent = 2 if player == 1 else 1
     reward   = 0
 
@@ -153,7 +206,7 @@ def defensive_reward(board, action, player):    # ✅ moved up!
     return reward
 
 
-def shape_reward(board, action, player):    # ✅ always last!
+def shape_reward(board, action, player):
     reward  = 0
     reward += scan_board(board, player)
     reward += centre_reward(board, player)

@@ -14,7 +14,8 @@ from visuals.renderer import Connect4Renderer
 # ─────────────────────────────────────────
 #  SETTINGS
 # ─────────────────────────────────────────
-MODEL_PATH  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "connect4_dqn.pth")
+BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "connect4_best.pth")  # best performing
 HUMAN       = 1   # human is player 1
 AI          = 2   # ai is player 2
 
@@ -27,9 +28,8 @@ def load_agent():
 
 def ai_move(agent, game):
     """Get AI's best move using trained model"""
-    state       = game.get_state()
     valid_moves = game.get_valid_moves()
-    action      = agent.select_action(state, valid_moves)
+    action      = agent.select_action(game.board, game.current_player, valid_moves)
     return action
 
 def main():
