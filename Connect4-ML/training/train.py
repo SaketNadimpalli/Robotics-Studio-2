@@ -204,8 +204,10 @@ def train():
     loss_count      = 0
     blocks_made     = 0
     blocks_missed   = 0
+    illegal_move_count = 0
+    illegal_move_examples = []
     total_moves     = 0
-    current_phase   = get_curriculum_phase(agent.epsilon
+    current_phase   = get_curriculum_phase(agent.epsilon)
     last_phase = current_phase
 
     os.makedirs(MODELS_DIR, exist_ok=True)
@@ -231,6 +233,16 @@ def train():
                     action = np.random.choice(valid_moves)
                 else:
                     action = agent.select_action(board, current_player, valid_moves)
+        
+        if action not in valid_moves:
+            illegal_move_count += 1
+            illegal_move_examples.append({
+                'episode': episode,
+                'player': current_player,
+                'action': int(action),
+                'valid_moves': valid_moves
+            })
+            action = np.random.choice(valid_moves)
 
             # ── Check threats BEFORE move ──────────
             opponent        = 2 if current_player == 1 else 1
