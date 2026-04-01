@@ -5,6 +5,8 @@ import pygame
 import torch
 import numpy as np
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from game.connect4_env import Connect4

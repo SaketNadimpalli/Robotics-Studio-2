@@ -20,7 +20,7 @@ class DQNAgent:
     ):
         # ── Device ────────────────────────────────────
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"🖥️ Using device: {self.device}")
+        print(f" Using device: {self.device}")
 
         # ── Networks ──────────────────────────────────
         self.policy_net = DQN(output_size=output_size).to(self.device)  # ✅ GPU!
