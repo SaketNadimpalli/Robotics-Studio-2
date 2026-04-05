@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from game.connect4_env import Connect4
 from agent.dqn_agent import DQNAgent
 from visuals.renderer import Connect4Renderer
+from search.minimax import minimax_search
 
 # ─────────────────────────────────────────
 #  SETTINGS
@@ -29,10 +30,13 @@ def load_agent():
     return agent
 
 def ai_move(agent, game):
-    """Get AI's best move using trained model"""
-    valid_moves = game.get_valid_moves()
-    action      = agent.select_action(game.board, game.current_player, valid_moves)
-    return action
+    """Get AI's best move using 4-ply minimax search"""
+    return minimax_search(
+        game.board,
+        agent,
+        ai_player = AI,
+        depth     = 4
+    )
 
 def main():
     # ── Setup ─────────────────────────────
