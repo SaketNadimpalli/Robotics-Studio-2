@@ -3,24 +3,27 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import copy
 import json
 import numpy as np
 from game.connect4_env import Connect4
 from agent.dqn_agent import DQNAgent
 from training.reward_shaper import get_winning_moves, scan_board, centre_reward, detect_fork_threat
-from training.opponent_cache import OpponentCache  # ← new import!
+from training.opponent_cache import OpponentCache
 
 # ─────────────────────────────────────────
 #  HYPERPARAMETERS
 # ─────────────────────────────────────────
-EPISODES         = 100000
-TARGET_UPDATE    = 10
-PRINT_EVERY      = 1000
-CHECKPOINT_EVERY = 5000
-REPLAY_EVERY     = 1000
-CYCLE_EPISODES   = 3000   # ← games per cache cycle!
-WIN_THRESHOLD    = 40.0   # ← win rate needed to add to cache!
-CACHE_SIZE       = 10     # ← max opponents in cache!
+
+EPISODES         = 1000000  
+TARGET_UPDATE    = 10    
+PRINT_EVERY      = 2000    
+CHECKPOINT_EVERY = 10000   
+REPLAY_EVERY     = 2000     
+CYCLE_EPISODES   = 5000    
+WIN_THRESHOLD    = 40.0     
+CACHE_SIZE       = 10       
+GAMMA            = 0.95     
 
 # ─────────────────────────────────────────
 #  PATHS
@@ -48,14 +51,11 @@ def get_curriculum_phase(epsilon):
 # ─────────────────────────────────────────
 #  EVALUATE FUNCTION
 # ─────────────────────────────────────────
-
 def evaluate(agent, game, num_games=200):
     wins = 0
     for i in range(num_games):
-        board = game.reset()
-        done  = False
-
-        # Alternate: half games as P1, half as P2!
+        board       = game.reset()
+        done        = False
         agent_is_p1 = (i < num_games // 2)
 
         while not done:
@@ -63,7 +63,6 @@ def evaluate(agent, game, num_games=200):
 
             if game.current_player == 1:
                 if agent_is_p1:
-                    # Agent plays as P1
                     old_eps       = agent.epsilon
                     agent.epsilon = 0.0
                     action        = agent.select_action(board, 1, valid_moves)
@@ -72,7 +71,6 @@ def evaluate(agent, game, num_games=200):
                     action = np.random.choice(valid_moves)
             else:
                 if not agent_is_p1:
-                    # Agent plays as P2
                     old_eps       = agent.epsilon
                     agent.epsilon = 0.0
                     action        = agent.select_action(board, 2, valid_moves)
@@ -82,14 +80,12 @@ def evaluate(agent, game, num_games=200):
 
             board, _, done = game.step(action)
 
-        # Count win for agent regardless of which player
         if agent_is_p1 and game.winner == 1:
             wins += 1
         elif not agent_is_p1 and game.winner == 2:
             wins += 1
 
     return wins / num_games * 100
-
 
 # ─────────────────────────────────────────
 #  SAVE REPLAY FUNCTION
@@ -147,7 +143,6 @@ def compute_reward(
             return 1.0, blocks_made, blocks_missed
 
     reward = 0.0
-
     reward += centre_reward(board, current_player) * 2
     reward += scan_board(board, current_player) * 0.05
 
@@ -186,12 +181,112 @@ def compute_reward(
     return reward, blocks_made, blocks_missed
 
 # ─────────────────────────────────────────
+#  4-STEP RETURN COMPUTATION
+# ─────────────────────────────────────────
+def compute_4step_return(
+    board,
+    action,
+    r1,
+    done1,
+    game,
+    agent,
+    current_opponent,
+    gamma,
+    current_player    # ← knows whose perspective!
+):
+    opponent_player = 2 if current_player == 1 else 1
+
+    if done1:
+        return r1, game.board.copy(), done1
+
+    game_copy = copy.deepcopy(game)
+
+    # ── Move 2 — OTHER player ──────────────────────
+    valid_moves_2 = game_copy.get_valid_moves()
+    if not valid_moves_2:
+        return r1, game_copy.board.copy(), True
+
+    # Other player moves
+    if game_copy.current_player == current_player:
+        action_2 = agent.select_action(game_copy.board, current_player, valid_moves_2)
+    else:
+        action_2 = current_opponent.select_action(game_copy.board, opponent_player, valid_moves_2)
+
+    opp_win_2   = get_winning_moves(game_copy.board, opponent_player)
+    agent_win_2 = get_winning_moves(game_copy.board, current_player)
+    _, _, done2 = game_copy.step(action_2)
+
+    r2, _, _ = compute_reward(
+        game_copy.board, action_2, opponent_player,
+        opp_win_2, agent_win_2,
+        game_copy, done2, agent.epsilon,
+        0, 0
+    )
+
+    if done2:
+        four_step = r1 - gamma * r2
+        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done2
+
+    # ── Move 3 — AGENT again ───────────────────────
+    valid_moves_3 = game_copy.get_valid_moves()
+    if not valid_moves_3:
+        four_step = r1 - gamma * r2
+        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), True
+
+    action_3    = agent.select_action(game_copy.board, current_player, valid_moves_3)
+    opp_win_3   = get_winning_moves(game_copy.board, opponent_player)
+    agent_win_3 = get_winning_moves(game_copy.board, current_player)
+    _, _, done3 = game_copy.step(action_3)
+
+    r3, _, _ = compute_reward(
+        game_copy.board, action_3, current_player,
+        opp_win_3, agent_win_3,
+        game_copy, done3, agent.epsilon,
+        0, 0
+    )
+
+    if done3:
+        four_step = r1 - gamma * r2 + gamma**2 * r3
+        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done3
+
+    # ── Move 4 — OTHER player again ────────────────
+    valid_moves_4 = game_copy.get_valid_moves()
+    if not valid_moves_4:
+        four_step = r1 - gamma * r2 + gamma**2 * r3
+        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), True
+
+    if game_copy.current_player == current_player:
+        action_4 = agent.select_action(game_copy.board, current_player, valid_moves_4)
+    else:
+        action_4 = current_opponent.select_action(game_copy.board, opponent_player, valid_moves_4)
+
+    opp_win_4   = get_winning_moves(game_copy.board, opponent_player)
+    agent_win_4 = get_winning_moves(game_copy.board, current_player)
+    _, _, done4 = game_copy.step(action_4)
+
+    r4, _, _ = compute_reward(
+        game_copy.board, action_4, opponent_player,
+        opp_win_4, agent_win_4,
+        game_copy, done4, agent.epsilon,
+        0, 0
+    )
+
+    four_step = (
+          r1
+        - gamma    * r2
+        + gamma**2 * r3
+        - gamma**3 * r4
+    )
+
+    return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done4
+
+# ─────────────────────────────────────────
 #  TRAIN FUNCTION
 # ─────────────────────────────────────────
 def train():
     game           = Connect4()
     agent          = DQNAgent()
-    opponent_cache = OpponentCache(         # ← initialise cache!
+    opponent_cache = OpponentCache(
         max_size      = CACHE_SIZE,
         win_threshold = WIN_THRESHOLD
     )
@@ -226,10 +321,8 @@ def train():
     print(f"{'Episode':<10} {'Phase':<8} {'Winner':<10} {'Reward':<10} {'Epsilon':<10} {'Loss':<10} {'WinRate':<10} {'BlockRate':<10} {'CacheSize':<10}")
     print("-" * 110)
 
-    # ── Main training loop ─────────────────────────
     while total_episodes < EPISODES:
 
-        # ── Select opponent for this cycle ──────────
         current_opponent = opponent_cache.select_opponent()
         opponent_name    = type(current_opponent).__name__
         print(f"\n🎮 New cycle vs {opponent_name} | Cache size: {len(opponent_cache)}")
@@ -237,25 +330,28 @@ def train():
         cycle_rewards = []
         cycle_losses  = []
 
-        # ── Play CYCLE_EPISODES games ────────────────
         for cycle_ep in range(1, CYCLE_EPISODES + 1):
             board        = game.reset()
             total_reward = 0
             total_loss   = []
             done         = False
 
+            # ── CHANGE 1 — Alternate who agent plays as! ──
+            agent_is_p1     = (cycle_ep % 2 == 1)  # odd=P1, even=P2
+            agent_player    = 1 if agent_is_p1 else 2
+            opponent_player = 2 if agent_is_p1 else 1
 
             while not done:
                 valid_moves    = game.get_valid_moves()
                 current_player = game.current_player
 
-                # ── 1. Select action ──────────────────────────
-                if current_player == 1:
-                    action = agent.select_action(board, 1, valid_moves)
+                # ── CHANGE 2 — Agent plays as correct player!
+                if current_player == agent_player:
+                    action = agent.select_action(board, agent_player, valid_moves)
                 else:
-                    action = current_opponent.select_action(board, 2, valid_moves)
+                    action = current_opponent.select_action(board, opponent_player, valid_moves)
 
-                # ── 2. Illegal move check ─────────────────────
+                # ── Illegal move check ─────────────────
                 if action not in valid_moves:
                     illegal_move_count += 1
                     illegal_move_examples.append({
@@ -266,16 +362,16 @@ def train():
                     })
                     action = np.random.choice(valid_moves)
 
-                # ── 3. Check threats BEFORE move ──────────────
-                opp_num         = 2 if current_player == 1 else 1
+                # ── Check threats BEFORE move ──────────
+                opp_num         = opponent_player if current_player == agent_player else agent_player
                 opp_win_moves   = get_winning_moves(game.board, opp_num)
                 agent_win_moves = get_winning_moves(game.board, current_player)
 
-                # ── 4. Execute move ───────────────────────────
+                # ── Execute move ───────────────────────
                 next_board, _, done = game.step(action)
                 total_moves        += 1
 
-                # ── 5. Compute reward ─────────────────────────
+                # ── Compute reward ─────────────────────
                 reward, blocks_made, blocks_missed = compute_reward(
                     game.board, action, current_player,
                     opp_win_moves, agent_win_moves,
@@ -283,9 +379,16 @@ def train():
                     blocks_made, blocks_missed
                 )
 
-                # ── 6. Store and train (Player 1 only!) ───────
-                if current_player == 1:
-                    agent.remember(board, 1, action, reward, next_board, done)
+                # ── CHANGE 3 — Train when AGENT moves! ────
+                if current_player == agent_player:
+                    four_step_return, board_4, done_4 = compute_4step_return(
+                        board, action, reward, done,
+                        game, agent, current_opponent,
+                        gamma          = GAMMA,
+                        current_player = agent_player  # ← correct perspective!
+                    )
+
+                    agent.remember(board, agent_player, action, four_step_return, board_4, done_4)
                     loss = agent.train()
                     if loss is not None:
                         total_loss.append(loss)
@@ -293,9 +396,9 @@ def train():
                 total_reward += reward
                 board         = next_board
 
-
             # ── Track results ──────────────────────────
-            if game.winner == 1:
+            # Track from agent's perspective!
+            if game.winner == agent_player:
                 win_count += 1
             elif game.winner == 0:
                 draw_count += 1
@@ -309,22 +412,18 @@ def train():
             cycle_rewards.append(total_reward)
             cycle_losses.append(avg_loss)
 
-            # ── Sync target network ────────────────────
             if total_episodes % TARGET_UPDATE == 0:
                 agent.update_target_network()
 
-            # ── Save checkpoint ────────────────────────
             if total_episodes % CHECKPOINT_EVERY == 0:
                 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
                 checkpoint_path = os.path.join(CHECKPOINT_DIR, f"checkpoint_ep{total_episodes}.pth")
                 agent.save(checkpoint_path)
                 print(f"  📌 Checkpoint saved at episode {total_episodes}")
 
-            # ── Save replay ────────────────────────────
             if total_episodes % REPLAY_EVERY == 0:
                 save_replay(agent, game, total_episodes)
 
-            # ── Print stats ────────────────────────────
             if total_episodes % PRINT_EVERY == 0:
                 avg_reward    = np.mean(episode_rewards[-PRINT_EVERY:])
                 avg_loss      = np.mean(episode_losses[-PRINT_EVERY:])
@@ -345,35 +444,27 @@ def train():
                     f"{len(opponent_cache):<10}"
                 )
 
-                # ── Always save latest ─────────────────
                 agent.save(LATEST_PATH)
                 print(f"  💾 Latest model saved!")
 
-                # ── Save best if improved ──────────────
                 if win_rate > best_win_rate:
                     best_win_rate = win_rate
                     agent.save(BEST_PATH)
                     print(f"  🏆 New best model! Win rate: {best_win_rate:.2f}%")
 
-                # ── Notify phase change ────────────────
                 if current_phase != last_phase:
                     print(f"\n  🎓 Entering Phase {current_phase}!")
                     last_phase = current_phase
 
-                # ── Reset counters ─────────────────────
                 blocks_made   = 0
                 blocks_missed = 0
                 total_moves   = 0
 
-        # ── End of cycle — evaluate vs cache ──────────
         print(f"\n📊 Cycle complete! Evaluating vs cache...")
         cache_win_rate = opponent_cache.evaluate_vs_cache(agent, game)
         print(f"   Win rate vs cache: {cache_win_rate:.1f}%")
-
-        # ── Try to add to cache ────────────────────────
         opponent_cache.try_add_to_cache(agent, cache_win_rate, agent.epsilon)
 
-    # ── Final summary ──────────────────────────────
     total_ep = win_count + draw_count + loss_count
     print("\n✅ Training Complete!")
     print(f"📊 Results over {total_ep} episodes:")
