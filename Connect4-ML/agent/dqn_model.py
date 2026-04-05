@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 class DQN(nn.Module):
-    def __init__(self, output_size=7):
+    def __init__(self, output_size=7, dropout_rate=0.3):
         super(DQN, self).__init__()
 
         # ── CNN Layers ──────────────────────────────────
@@ -12,16 +12,18 @@ class DQN(nn.Module):
             # First conv layer
             # 3 input channels → 32 filters, 3×3 kernel
             nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
             nn.ReLU(),
-
             # Second conv layer
             # 32 filters → 64 filters, 3×3 kernel
             nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
 
             # Third conv layer
             # 64 filters → 128 filters, 3×3 kernel
             nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
             nn.ReLU()
         )
 
@@ -34,8 +36,10 @@ class DQN(nn.Module):
         self.fc_layers = nn.Sequential(
             nn.Linear(self.flat_size, 256),  # CNN output → 256
             nn.ReLU(),
+            nn.Dropout(p=dropout_rate),              # Dropout for regularization
             nn.Linear(256, 256),             # 256 → 256
             nn.ReLU(),
+            nn.Dropout(p=dropout_rate),              # Dropout for regularization
             nn.Linear(256, output_size)      # 256 → 7 Q-values
         )
 

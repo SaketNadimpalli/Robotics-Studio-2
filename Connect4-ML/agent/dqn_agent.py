@@ -52,12 +52,14 @@ class DQNAgent:
         if np.random.rand() < self.epsilon:
             return np.random.choice(valid_moves)
 
+        self.policy_net.eval()
         state        = self.prepare_state(board, player)
         state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)  # ✅ GPU!
 
         with torch.no_grad():
             q_values = self.policy_net(state_tensor).squeeze()
 
+        self.policy_net.train()
         valid_q = {col: q_values[col].item() for col in valid_moves}
         return max(valid_q, key=valid_q.get)
 
@@ -70,6 +72,7 @@ class DQNAgent:
         if len(self.memory) < self.batch_size:
             return None
 
+        self.policy_net.train()
         states, actions, rewards, next_states, dones = self.memory.sample(self.batch_size)
 
         # ── Move everything to GPU ─────────────────────
@@ -82,7 +85,8 @@ class DQNAgent:
         current_q = self.policy_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
 
         with torch.no_grad():
-            next_q   = self.target_net(next_states).max(1)[0]
+            best_actions = self.policy_net(next_states).argmax(dim=1)
+            next_q   = self.target_net(next_states).gather(1, best_actions.unsqueeze(1)).squeeze(1)
             target_q = rewards + (1 - dones) * self.gamma * next_q
 
         loss = self.loss_fn(current_q, target_q)

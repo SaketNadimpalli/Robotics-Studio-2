@@ -18,8 +18,8 @@ from visuals.renderer import Connect4Renderer
 # ─────────────────────────────────────────
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "connect4_latest.pth")  # best performing
-HUMAN       = 1   # human is player 1
-AI          = 2   # ai is player 2
+HUMAN       = 2   # human is player 1
+AI          = 1   # ai is player 2
 
 def load_agent():
     agent         = DQNAgent()
