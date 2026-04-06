@@ -15,12 +15,12 @@ from training.opponent_cache import OpponentCache
 #  HYPERPARAMETERS
 # ─────────────────────────────────────────
 
-EPISODES         = 1000000  
+EPISODES         = 2000  
 TARGET_UPDATE    = 10    
-PRINT_EVERY      = 2000    
+PRINT_EVERY      = 500    
 CHECKPOINT_EVERY = 10000   
 REPLAY_EVERY     = 2000     
-CYCLE_EPISODES   = 5000    
+CYCLE_EPISODES   = 500    
 WIN_THRESHOLD    = 40.0     
 CACHE_SIZE       = 10       
 GAMMA            = 0.95     
@@ -51,38 +51,38 @@ def get_curriculum_phase(epsilon):
 # ─────────────────────────────────────────
 #  EVALUATE FUNCTION
 # ─────────────────────────────────────────
+
+
 def evaluate(agent, game, num_games=200):
+    """
+    Test agent as BOTH P1 and P2
+    Count wins regardless of which player!
+    Simply: did the agent win?
+    """
     wins = 0
     for i in range(num_games):
         board       = game.reset()
         done        = False
         agent_is_p1 = (i < num_games // 2)
+        agent_player = 1 if agent_is_p1 else 2
 
         while not done:
             valid_moves = game.get_valid_moves()
 
-            if game.current_player == 1:
-                if agent_is_p1:
-                    old_eps       = agent.epsilon
-                    agent.epsilon = 0.0
-                    action        = agent.select_action(board, 1, valid_moves)
-                    agent.epsilon = old_eps
-                else:
-                    action = np.random.choice(valid_moves)
+            if game.current_player == agent_player:
+                # Agent's turn
+                old_eps       = agent.epsilon
+                agent.epsilon = 0.0
+                action        = agent.select_action(board, agent_player, valid_moves)
+                agent.epsilon = old_eps
             else:
-                if not agent_is_p1:
-                    old_eps       = agent.epsilon
-                    agent.epsilon = 0.0
-                    action        = agent.select_action(board, 2, valid_moves)
-                    agent.epsilon = old_eps
-                else:
-                    action = np.random.choice(valid_moves)
+                # Random opponent's turn
+                action = np.random.choice(valid_moves)
 
             board, _, done = game.step(action)
 
-        if agent_is_p1 and game.winner == 1:
-            wins += 1
-        elif not agent_is_p1 and game.winner == 2:
+        # Did AGENT win? Don't care which player!
+        if game.winner == agent_player:
             wins += 1
 
     return wins / num_games * 100
