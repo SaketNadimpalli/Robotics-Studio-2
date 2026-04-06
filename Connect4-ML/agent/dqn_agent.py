@@ -14,7 +14,7 @@ class DQNAgent:
         gamma           = 0.95,
         epsilon         = 1.0,
         epsilon_min     = 0.01,
-        epsilon_decay   = 0.99999986,
+        epsilon_decay   = 0.99999963,
         batch_size      = 64,
         buffer_capacity = 100000,
         alpha           = 0.6,    # ← PER prioritisation
@@ -105,7 +105,7 @@ class DQNAgent:
             next_q       = self.target_net(next_states).gather(
                 1, best_actions.unsqueeze(1)
             ).squeeze(1)
-            target_q = rewards + (1 - dones) * (self.gamma ** 4) * next_q
+            target_q = rewards + (1 - dones) * self.gamma * next_q
 
         # ── TD errors for priority update ──────────────
         td_errors = (current_q - target_q).abs().detach().cpu().numpy()

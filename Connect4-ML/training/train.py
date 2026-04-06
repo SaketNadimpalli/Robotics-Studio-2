@@ -15,12 +15,12 @@ from training.opponent_cache import OpponentCache
 #  HYPERPARAMETERS
 # ─────────────────────────────────────────
 
-EPISODES         = 2000  
+EPISODES         = 1000000  
 TARGET_UPDATE    = 10    
-PRINT_EVERY      = 500    
+PRINT_EVERY      = 2000    
 CHECKPOINT_EVERY = 10000   
 REPLAY_EVERY     = 2000     
-CYCLE_EPISODES   = 500    
+CYCLE_EPISODES   = 5000    
 WIN_THRESHOLD    = 40.0     
 CACHE_SIZE       = 10       
 GAMMA            = 0.95     
@@ -136,11 +136,11 @@ def compute_reward(
 
     if done:
         if game.winner == 0:
-            return 0.5, blocks_made, blocks_missed
+            return 0.3, blocks_made, blocks_missed
         elif game.winner == current_player:
-            return -1.0, blocks_made, blocks_missed
-        else:
             return 1.0, blocks_made, blocks_missed
+        else:
+            return -1.0, blocks_made, blocks_missed
 
     reward = 0.0
     reward += centre_reward(board, current_player) * 2
