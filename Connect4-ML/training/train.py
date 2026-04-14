@@ -16,6 +16,7 @@ from training.opponent_cache import OpponentCache
 # ─────────────────────────────────────────
 
 EPISODES         = 1000000  
+EPISODE_OFFSET   = 90000    # ← add this!
 TARGET_UPDATE    = 10    
 PRINT_EVERY      = 2000    
 CHECKPOINT_EVERY = 10000   
@@ -417,9 +418,10 @@ def train():
 
             if total_episodes % CHECKPOINT_EVERY == 0:
                 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
-                checkpoint_path = os.path.join(CHECKPOINT_DIR, f"checkpoint_ep{total_episodes}.pth")
+  # ← set this to your last checkpoint number
+                checkpoint_path = os.path.join(CHECKPOINT_DIR, f"checkpoint_ep{total_episodes + EPISODE_OFFSET}.pth")
                 agent.save(checkpoint_path)
-                print(f"  📌 Checkpoint saved at episode {total_episodes}")
+                print(f"  📌 Checkpoint saved at episode {total_episodes + EPISODE_OFFSET}")
 
             if total_episodes % REPLAY_EVERY == 0:
                 save_replay(agent, game, total_episodes)
@@ -433,7 +435,7 @@ def train():
                 current_phase = get_curriculum_phase(agent.epsilon)
 
                 print(
-                    f"{total_episodes:<10} "
+                    f"{total_episodes + EPISODE_OFFSET :<10} "
                     f"Phase {current_phase:<3} "
                     f"{winner_str:<10} "
                     f"{avg_reward:<10.3f} "

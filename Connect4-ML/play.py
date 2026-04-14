@@ -2,7 +2,6 @@
 import sys
 import os
 import pygame
-import torch
 import numpy as np
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -12,15 +11,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from game.connect4_env import Connect4
 from agent.dqn_agent import DQNAgent
 from visuals.renderer import Connect4Renderer
-from search.minimax import minimax_search
 
 # ─────────────────────────────────────────
 #  SETTINGS
 # ─────────────────────────────────────────
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "connect4_latest.pth")  # best performing
-HUMAN       = 2   # human is player 1
-AI          = 1   # ai is player 2
+MODEL_PATH = os.path.join(BASE_DIR, "models", "connect4_latest.pth")
+HUMAN      = 2   # human is player 1
+AI         = 1   # ai is player 2
 
 def load_agent():
     agent         = DQNAgent()
@@ -30,13 +28,9 @@ def load_agent():
     return agent
 
 def ai_move(agent, game):
-    """Get AI's best move using 4-ply minimax search"""
-    return minimax_search(
-        game.board,
-        agent,
-        ai_player = AI,
-        depth     = 4
-    )
+    """Get AI's best move directly from DQN agent"""
+    valid_moves = game.get_valid_moves()
+    return agent.select_action(game.board, AI, valid_moves)
 
 def main():
     # ── Setup ─────────────────────────────
@@ -50,16 +44,15 @@ def main():
     print("Click a column to make your move!")
     print("Press R to restart\n")
 
-    running      = True
+    running           = True
     game_over_printed = False
-    ai_thinking  = False
 
     while running:
         renderer.draw_board()
 
         # ── AI's turn ─────────────────────
         if not game.game_over and game.current_player == AI:
-            pygame.time.wait(500)   # small delay so it feels natural!
+            pygame.time.wait(500)
             col = ai_move(agent, game)
             game.drop_piece(col)
             print(f"🤖 AI played column {col + 1}")
