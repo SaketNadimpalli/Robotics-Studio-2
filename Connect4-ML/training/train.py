@@ -139,9 +139,9 @@ def compute_reward(
         if game.winner == 0:
             return 0.3, blocks_made, blocks_missed
         elif game.winner == current_player:
-            return 1.0, blocks_made, blocks_missed
+            return 1.5, blocks_made, blocks_missed
         else:
-            return -1.0, blocks_made, blocks_missed
+            return -1.5, blocks_made, blocks_missed
 
     reward = 0.0
     reward += centre_reward(board, current_player) * 2
@@ -193,46 +193,35 @@ def compute_4step_return(
     agent,
     current_opponent,
     gamma,
-    current_player    # ← knows whose perspective!
+    current_player
 ):
-    opponent_player = 2 if current_player == 1 else 1
-
+    # If already done after move 1, just return r1
     if done1:
         return r1, game.board.copy(), done1
 
-    game_copy = copy.deepcopy(game)
+    game_copy       = copy.deepcopy(game)
+    opponent_player = 2 if current_player == 1 else 1
 
-    # ── Move 2 — OTHER player ──────────────────────
+    # ── Move 2 — Opponent moves ────────────────────
     valid_moves_2 = game_copy.get_valid_moves()
     if not valid_moves_2:
         return r1, game_copy.board.copy(), True
 
-    # Other player moves
     if game_copy.current_player == current_player:
         action_2 = agent.select_action(game_copy.board, current_player, valid_moves_2)
     else:
         action_2 = current_opponent.select_action(game_copy.board, opponent_player, valid_moves_2)
 
-    opp_win_2   = get_winning_moves(game_copy.board, opponent_player)
-    agent_win_2 = get_winning_moves(game_copy.board, current_player)
     _, _, done2 = game_copy.step(action_2)
 
-    r2, _, _ = compute_reward(
-        game_copy.board, action_2, opponent_player,
-        opp_win_2, agent_win_2,
-        game_copy, done2, agent.epsilon,
-        0, 0
-    )
-
+    # Opponent finished the game — no r3 available
     if done2:
-        four_step = r1 - gamma * r2
-        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done2
+        return r1, game_copy.board.copy(), done2
 
-    # ── Move 3 — AGENT again ───────────────────────
+    # ── Move 3 — Agent moves again ─────────────────
     valid_moves_3 = game_copy.get_valid_moves()
     if not valid_moves_3:
-        four_step = r1 - gamma * r2
-        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), True
+        return r1, game_copy.board.copy(), True
 
     action_3    = agent.select_action(game_copy.board, current_player, valid_moves_3)
     opp_win_3   = get_winning_moves(game_copy.board, opponent_player)
@@ -246,40 +235,12 @@ def compute_4step_return(
         0, 0
     )
 
-    if done3:
-        four_step = r1 - gamma * r2 + gamma**2 * r3
-        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done3
+    # ── Combine only agent's steps ─────────────────
+    # G = r1 + gamma²·r3
+    # Opponent steps (r2, r4) are intentionally skipped
+    four_step = r1 + (gamma ** 2) * r3
 
-    # ── Move 4 — OTHER player again ────────────────
-    valid_moves_4 = game_copy.get_valid_moves()
-    if not valid_moves_4:
-        four_step = r1 - gamma * r2 + gamma**2 * r3
-        return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), True
-
-    if game_copy.current_player == current_player:
-        action_4 = agent.select_action(game_copy.board, current_player, valid_moves_4)
-    else:
-        action_4 = current_opponent.select_action(game_copy.board, opponent_player, valid_moves_4)
-
-    opp_win_4   = get_winning_moves(game_copy.board, opponent_player)
-    agent_win_4 = get_winning_moves(game_copy.board, current_player)
-    _, _, done4 = game_copy.step(action_4)
-
-    r4, _, _ = compute_reward(
-        game_copy.board, action_4, opponent_player,
-        opp_win_4, agent_win_4,
-        game_copy, done4, agent.epsilon,
-        0, 0
-    )
-
-    four_step = (
-          r1
-        - gamma    * r2
-        + gamma**2 * r3
-        - gamma**3 * r4
-    )
-
-    return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done4
+    return float(np.clip(four_step, -2.0, 2.0)), game_copy.board.copy(), done3
 
 # ─────────────────────────────────────────
 #  TRAIN FUNCTION
