@@ -5487,7 +5487,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 661007205}
-  - component: {fileID: 661007204}
+  - component: {fileID: 661007206}
   m_Layer: 0
   m_Name: HandLogger
   m_TagString: Untagged
@@ -5495,21 +5495,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &661007204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 661007203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38854d208db85b84cbb5d2a65e642801, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandDataLogger
-  leftHand: {fileID: 1490259018}
-  rightHand: {fileID: 897580256}
-  logInterval: 0.25
 --- !u!4 &661007205
 Transform:
   m_ObjectHideFlags: 0
@@ -5525,6 +5510,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &661007206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661007203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6912956161473354ca7fe89b5860d184, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandDataLogger
+  leftHand: {fileID: 1490259024}
+  rightHand: {fileID: 897580262}
+  logInterval: 0.25
 --- !u!1 &695906404
 GameObject:
   m_ObjectHideFlags: 0
@@ -7070,7 +7070,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1800725127586568702, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
   m_PrefabInstance: {fileID: 1622807708}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &897580256
+--- !u!114 &897580262
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7079,7 +7079,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 897580255}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9c899c0b7be96748b3663d2c3d1c7c6, type: 3}
+  m_Script: {fileID: 11500000, guid: e3c7d093c309b6645a0331c714aa98db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HandTracker
   hand: 1
@@ -11792,7 +11792,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6355494128053973299, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
   m_PrefabInstance: {fileID: 1622807708}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1490259018
+--- !u!114 &1490259024
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11801,7 +11801,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1490259012}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9c899c0b7be96748b3663d2c3d1c7c6, type: 3}
+  m_Script: {fileID: 11500000, guid: e3c7d093c309b6645a0331c714aa98db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HandTracker
   hand: 0
@@ -12544,10 +12544,10 @@ PrefabInstance:
       addedObject: {fileID: 1622807714}
     - targetCorrespondingSourceObject: {fileID: 6355494128053973299, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1490259018}
+      addedObject: {fileID: 1490259024}
     - targetCorrespondingSourceObject: {fileID: 1800725127586568702, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 897580256}
+      addedObject: {fileID: 897580262}
   m_SourcePrefab: {fileID: 100100000, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
 --- !u!4 &1622807709 stripped
 Transform:

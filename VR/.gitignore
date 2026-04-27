@@ -15,7 +15,6 @@ Obj/
 Build/
 Builds/
 Logs/
-UserSettings/
 MemoryCaptures/
 
 # Unity generated solution/project files (safe to ignore — Unity regenerates these)
@@ -38,3 +37,13 @@ desktop.ini
 # IDE
 .idea/
 .vscode/
+
+# Build artifacts
+*.apk
+*.aab
+*.unitypackage
+*.app
+ExportedObj/
+
+# Asset Store tools (often huge, machine-specific)
+[Aa]ssets/AssetStoreTools*
