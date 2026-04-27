@@ -7,7 +7,6 @@
 // Throttled by default (4 prints/sec). Logging every frame floods the Console
 // to the point it becomes unusable; set logInterval = 0 if you really want it.
 // -----------------------------------------------------------------------------
-
 using UnityEngine;
 
 public class HandDataLogger : MonoBehaviour
@@ -35,8 +34,8 @@ public class HandDataLogger : MonoBehaviour
 
     static void LogHand(string tag, HandTracker h)
     {
-        if (h == null)       { Debug.Log($"{tag}: (no tracker assigned)"); return; }
-        if (!h.IsTracked)    { Debug.Log($"{tag}: not tracked");           return; }
+        if (h == null) { Debug.Log($"{tag}: (no tracker assigned)"); return; }
+        if (!h.IsTracked) { Debug.Log($"{tag}: not tracked"); return; }
 
         Vector3 p = h.Position;
         Vector3 v = h.LinearVelocity;

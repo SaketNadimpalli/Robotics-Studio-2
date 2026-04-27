@@ -1,4 +1,3 @@
-
 # Ignore ML/Connect4 project
 Connect4-ML/
 __pycache__/
@@ -19,14 +18,22 @@ Logs/
 UserSettings/
 MemoryCaptures/
 
-# Unity files
+# Unity generated solution/project files (safe to ignore — Unity regenerates these)
 *.csproj
 *.sln
-*.meta
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# DO NOT ignore .meta files — Unity needs them tracked in git
+# (removed: *.meta)
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # IDE
 .idea/

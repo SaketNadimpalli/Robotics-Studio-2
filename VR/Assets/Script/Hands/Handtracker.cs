@@ -16,7 +16,6 @@
 //   * Put this script on (or under) your XR Origin so we can convert joint
 //     poses from tracking space into world space correctly.
 // -----------------------------------------------------------------------------
-
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Hands;
@@ -42,17 +41,17 @@ public class HandTracker : MonoBehaviour
     [Range(0f, 0.95f)] public float velocitySmoothing = 0.2f;
 
     // -------- Read-only outputs, refreshed every frame the hand is tracked --
-    public bool       IsTracked        { get; private set; }
-    public Vector3    Position         { get; private set; }
-    public Quaternion Rotation         { get; private set; }
-    public Vector3    LinearVelocity   { get; private set; }
-    public Vector3    AngularVelocity  { get; private set; }
+    public bool IsTracked { get; private set; }
+    public Vector3 Position { get; private set; }
+    public Quaternion Rotation { get; private set; }
+    public Vector3 LinearVelocity { get; private set; }
+    public Vector3 AngularVelocity { get; private set; }
 
     // -------- Internals -----------------------------------------------------
     XRHandSubsystem _subsystem;
-    bool            _havePrev;
-    Vector3         _prevPos;
-    Quaternion      _prevRot;
+    bool _havePrev;
+    Vector3 _prevPos;
+    Quaternion _prevRot;
 
     void OnEnable()
     {
@@ -68,6 +67,7 @@ public class HandTracker : MonoBehaviour
                              "enabled in your XR plugin?");
             return;
         }
+
         _subsystem = subs[0];
         _subsystem.updatedHands += OnHandsUpdated;
     }
@@ -76,8 +76,8 @@ public class HandTracker : MonoBehaviour
     {
         if (_subsystem != null) _subsystem.updatedHands -= OnHandsUpdated;
         _subsystem = null;
-        _havePrev  = false;
-        IsTracked  = false;
+        _havePrev = false;
+        IsTracked = false;
     }
 
     void OnHandsUpdated(XRHandSubsystem subsystem,
@@ -94,13 +94,13 @@ public class HandTracker : MonoBehaviour
         if (!xrHand.isTracked ||
             !xrHand.GetJoint(joint).TryGetPose(out Pose poseLocal))
         {
-            IsTracked  = false;
-            _havePrev  = false;    // reset so we don't produce a bogus spike
+            IsTracked = false;
+            _havePrev = false;    // reset so we don't produce a bogus spike
             return;                // when tracking resumes next frame
         }
 
         // --- Convert joint pose: XR-Origin tracking space -> world space ----
-        Vector3    worldPos = xrOrigin.TransformPoint(poseLocal.position);
+        Vector3 worldPos = xrOrigin.TransformPoint(poseLocal.position);
         Quaternion worldRot = xrOrigin.rotation * poseLocal.rotation;
 
         float dt = Time.deltaTime;
@@ -121,6 +121,7 @@ public class HandTracker : MonoBehaviour
             Quaternion dq = worldRot * Quaternion.Inverse(_prevRot);
             dq.ToAngleAxis(out float angleDeg, out Vector3 axis);
             if (angleDeg > 180f) angleDeg -= 360f;          // shortest arc
+
             Vector3 w = (axis.sqrMagnitude > 1e-8f)
                       ? axis.normalized * (angleDeg * Mathf.Deg2Rad / dt)
                       : Vector3.zero;
@@ -128,19 +129,19 @@ public class HandTracker : MonoBehaviour
             // ---------------- Exponential smoothing -------------------------
             // new = prev * s + raw * (1-s).  Zero smoothing -> raw finite diff.
             float a = 1f - velocitySmoothing;
-            LinearVelocity  = Vector3.Lerp(LinearVelocity,  v, a);
+            LinearVelocity = Vector3.Lerp(LinearVelocity, v, a);
             AngularVelocity = Vector3.Lerp(AngularVelocity, w, a);
         }
         else
         {
-            LinearVelocity  = Vector3.zero;
+            LinearVelocity = Vector3.zero;
             AngularVelocity = Vector3.zero;
         }
 
-        Position  = worldPos;
-        Rotation  = worldRot;
-        _prevPos  = worldPos;
-        _prevRot  = worldRot;
+        Position = worldPos;
+        Rotation = worldRot;
+        _prevPos = worldPos;
+        _prevRot = worldRot;
         _havePrev = true;
         IsTracked = true;
     }

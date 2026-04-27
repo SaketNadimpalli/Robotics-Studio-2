@@ -3,6 +3,26 @@
   "WorkspaceRootPath": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\UR3PoseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handtracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Handtracker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handdatahud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Handdatahud.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handatalogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Handatalogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\UR3PoseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\UR3PoseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Library\\PackageCache\\com.unity.robotics.urdf-importer@4ed58f8d00fe\\Runtime\\Extensions\\UrdfRobotExtensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Library\\PackageCache\\com.unity.robotics.urdf-importer@4ed58f8d00fe\\Runtime\\Extensions\\UrdfRobotExtensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -35,6 +55,69 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "UR3PoseController.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseController.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\UR3PoseController.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseController.cs",
+              "RelativeToolTip": "Assets\\Script\\UR3PoseController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-27T02:36:35.358Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Handtracker.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handtracker.cs",
+              "RelativeDocumentMoniker": "Assets\\Handtracker.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handtracker.cs",
+              "RelativeToolTip": "Assets\\Handtracker.cs",
+              "ViewState": "AgIAAGUAAAAAAAAAAAAAwH0AAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-27T02:29:43.709Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Handdatahud.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handdatahud.cs",
+              "RelativeDocumentMoniker": "Assets\\Handdatahud.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handdatahud.cs",
+              "RelativeToolTip": "Assets\\Handdatahud.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAwCQAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-27T02:29:37.966Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Handatalogger.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handatalogger.cs",
+              "RelativeDocumentMoniker": "Assets\\Handatalogger.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Handatalogger.cs",
+              "RelativeToolTip": "Assets\\Handatalogger.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwCIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-27T02:29:32.978Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UR3PoseController.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\UR3PoseController.cs",
+              "RelativeDocumentMoniker": "Assets\\UR3PoseController.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\UR3PoseController.cs",
+              "RelativeToolTip": "Assets\\UR3PoseController.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T02:59:21.392Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "UrdfRobotExtensions.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Library\\PackageCache\\com.unity.robotics.urdf-importer@4ed58f8d00fe\\Runtime\\Extensions\\UrdfRobotExtensions.cs",
               "RelativeDocumentMoniker": "Library\\PackageCache\\com.unity.robotics.urdf-importer@4ed58f8d00fe\\Runtime\\Extensions\\UrdfRobotExtensions.cs",
@@ -42,12 +125,11 @@
               "RelativeToolTip": "Library\\PackageCache\\com.unity.robotics.urdf-importer@4ed58f8d00fe\\Runtime\\Extensions\\UrdfRobotExtensions.cs",
               "ViewState": "AgIAAGwAAAAAAAAAAAAjwIMAAAB9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T15:45:25.967Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T15:45:25.967Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "ROSInit.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\ROSInit.cs",
               "RelativeDocumentMoniker": "Assets\\ROSInit.cs",
@@ -55,12 +137,11 @@
               "RelativeToolTip": "Assets\\ROSInit.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T14:30:38.035Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T14:30:38.035Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 8,
               "Title": "ColumnDetector.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\ColumnDetector.cs",
               "RelativeDocumentMoniker": "Assets\\ColumnDetector.cs",
@@ -72,7 +153,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "CoinSnap.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\CoinSnap.cs",
               "RelativeDocumentMoniker": "Assets\\CoinSnap.cs",
@@ -80,12 +161,11 @@
               "RelativeToolTip": "Assets\\CoinSnap.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T06:02:46.911Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T06:02:46.911Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "Connect4ColliderBuilder.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Connect4ColliderBuilder.cs",
               "RelativeDocumentMoniker": "Assets\\Connect4ColliderBuilder.cs",
