@@ -43,37 +43,47 @@ public class GameStateManager : MonoBehaviour
 
     [Header("Sync detection")]
     public float slotDetectionRadius = 0.05f;  // tune to your coin/slot scale
+    public float syncCheckDelay = 2.0f;  // seconds to wait after a move before checking sync
+
+    private string lastPythonBoard;
 
     int[,] DeriveBoardFromScene()
     {
-        // Python convention: board[0] = top row, board[5] = bottom
-        // Unity convention: rows[0] = bottom, rows[5] = top
-        // So pythonRow = 5 - unityRowIdx
         int[,] board = new int[6, 7];
 
-        for (int col = 0; col < columnDetectors.Length; col++)
+        GameObject[] coins = GameObject.FindGameObjectsWithTag("Coin");
+        foreach (var coin in coins)
         {
-            var detector = columnDetectors[col];
-            if (detector == null) continue;
+            var snap = coin.GetComponent<CoinSnap>();
+            if (snap == null || !snap.hasSnapped) continue;
 
-            for (int unityRow = 0; unityRow < detector.rows.Length; unityRow++)
+            // Find the closest slot anywhere on the board for this coin
+            float bestDist = float.MaxValue;
+            int bestCol = -1, bestUnityRow = -1;
+
+            for (int col = 0; col < columnDetectors.Length; col++)
             {
-                int pyRow = 5 - unityRow;
-                Vector3 slotPos = detector.rows[unityRow].position;
-                Collider[] hits = Physics.OverlapSphere(slotPos, slotDetectionRadius);
-
-                foreach (var hit in hits)
+                var detector = columnDetectors[col];
+                if (detector == null) continue;
+                for (int unityRow = 0; unityRow < detector.rows.Length; unityRow++)
                 {
-                    if (!hit.CompareTag("Coin")) continue;
-                    var snap = hit.GetComponent<CoinSnap>();
-                    if (snap != null && snap.hasSnapped)
-                    {
-                        board[pyRow, col] = snap.isAICoin ? 2 : 1;
-                        break;
-                    }
+                    if (detector.rows[unityRow] == null) continue;
+                    float d = Vector3.Distance(
+                        coin.transform.position,
+                        detector.rows[unityRow].position
+                    );
+                    if (d < bestDist) { bestDist = d; bestCol = col; bestUnityRow = unityRow; }
                 }
             }
+
+            // Sanity threshold: only count if the coin is reasonably near a slot
+            if (bestCol >= 0 && bestDist < 0.5f)
+            {
+                int pyRow = 5 - bestUnityRow;
+                board[pyRow, bestCol] = snap.isAICoin ? 2 : 1;
+            }
         }
+
         return board;
     }
 
@@ -94,19 +104,19 @@ public class GameStateManager : MonoBehaviour
 
     void OnBoardState(StringMsg msg)
     {
-        Debug.Log("OnBoardState fired!");
-        string unityBoard = FormatBoard(DeriveBoardFromScene());
+        lastPythonBoard = msg.data;
+        CancelInvoke(nameof(CheckSync));         // if a new board arrives, restart the timer
+        Invoke(nameof(CheckSync), syncCheckDelay);
+    }
 
-        if (unityBoard == msg.data)
-        {
-            Debug.Log("Board (in sync):\n" + msg.data);
-        }
+    void CheckSync()
+    {
+        if (lastPythonBoard == null) return;
+        string unityBoard = FormatBoard(DeriveBoardFromScene());
+        if (unityBoard == lastPythonBoard)
+            Debug.Log("Board (in sync):\n" + lastPythonBoard);
         else
-        {
-            Debug.LogWarning(
-                "DESYNC DETECTED\nPython:\n" + msg.data + "\nUnity:\n" + unityBoard
-            );
-        }
+            Debug.LogWarning("DESYNC DETECTED\nPython:\n" + lastPythonBoard + "\nUnity:\n" + unityBoard);
     }
 
     public void ResetGame()

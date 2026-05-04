@@ -8,6 +8,11 @@ using UnityEngine;
 /// 1-6, and the URDF Controller is temporarily disabled during a pose move so
 /// the two don't fight over drive targets.
 ///
+/// On arrival at each pose, logs a snapshot of the six joint angles (and the
+/// end-effector world position if assigned) so you can demonstrate the
+/// joint-space contract: these are the values that would be received over ROS
+/// to replicate a real-life pose.
+///
 /// USAGE:
 ///  1. Attach this script to the "ur3e" GameObject (same one that has the
 ///     URDF-Importer "Controller" script).
@@ -17,6 +22,8 @@ using UnityEngine;
 ///         wrist_1_link, wrist_2_link, wrist_3_link) into the slots manually.
 ///       - Drag the URDF Controller component into the "Urdf Controller"
 ///         slot so this script can disable it during a pose move.
+///       - (Optional) Drag the tool0 / end-effector Transform into the
+///         "End Effector" slot to also log its world position on arrival.
 ///       - Edit the Presets array to add/tune poses. Values are in DEGREES.
 ///  3. Press Play. Click into the Game view to give it keyboard focus.
 ///       - Press 1 -> Home pose
@@ -64,6 +71,15 @@ public class UR3PoseController : MonoBehaviour
              "keys don't fight the interpolation.")]
     public MonoBehaviour urdfController;
 
+    [Header("Snapshot Logging")]
+    [Tooltip("Optional: Transform of the end-effector (e.g. tool0). If assigned, " +
+             "its world position is included in the arrival snapshot — useful for " +
+             "demonstrating the Cartesian side of the ROS contract.")]
+    public Transform endEffector;
+
+    [Tooltip("Also log the snapshot in ROS-style radians (in addition to degrees).")]
+    public bool alsoLogRadians = true;
+
     // Standard UR link names (ROS-industrial convention)
     private static readonly string[] LinkNames =
     {
@@ -73,6 +89,16 @@ public class UR3PoseController : MonoBehaviour
         "wrist_1_link",
         "wrist_2_link",
         "wrist_3_link"
+    };
+
+    private static readonly string[] JointNames =
+    {
+        "shoulder_pan",
+        "shoulder_lift",
+        "elbow",
+        "wrist_1",
+        "wrist_2",
+        "wrist_3"
     };
 
     private Coroutine activeMove;
@@ -183,11 +209,66 @@ public class UR3PoseController : MonoBehaviour
 
         Debug.Log($"[UR3PoseController] Reached pose: {pose.name}");
 
+        // ─── Snapshot log ────────────────────────────────────────────────
+        // Read the actual current joint angles (rather than the target) so the
+        // log reflects what the digital arm is really at, the same way a ROS
+        // /joint_states message would report the live UR3 state.
+        LogJointSnapshot(pose.name);
+        // ─────────────────────────────────────────────────────────────────
+
         // Resume URDF Controller
         if (urdfController != null && controllerWasEnabled)
             urdfController.enabled = true;
 
         activeMove = null;
+    }
+
+    /// <summary>
+    /// Logs the current joint angles in a clean, ROS-style format. Called on
+    /// pose arrival, but also exposed publicly so you can hook it to a key /
+    /// button if you want manual snapshots during the demo.
+    /// </summary>
+    public void LogJointSnapshot(string label = "Manual")
+    {
+        float[] degrees = new float[6];
+        for (int i = 0; i < 6; i++)
+            degrees[i] = joints[i] != null ? joints[i].xDrive.target : 0f;
+
+        // Pretty per-joint breakdown (easy to read on camera)
+        Debug.Log(
+            $"[UR3 Snapshot] '{label}' — joint angles (deg):\n" +
+            $"   shoulder_pan  : {degrees[0],8:F2}\n" +
+            $"   shoulder_lift : {degrees[1],8:F2}\n" +
+            $"   elbow         : {degrees[2],8:F2}\n" +
+            $"   wrist_1       : {degrees[3],8:F2}\n" +
+            $"   wrist_2       : {degrees[4],8:F2}\n" +
+            $"   wrist_3       : {degrees[5],8:F2}"
+        );
+
+        // One-liner array (the form a ROS message would carry)
+        Debug.Log(
+            $"[UR3 Snapshot] deg array: [{degrees[0]:F2}, {degrees[1]:F2}, {degrees[2]:F2}, " +
+            $"{degrees[3]:F2}, {degrees[4]:F2}, {degrees[5]:F2}]"
+        );
+
+        if (alsoLogRadians)
+        {
+            float[] rad = new float[6];
+            for (int i = 0; i < 6; i++) rad[i] = degrees[i] * Mathf.Deg2Rad;
+            Debug.Log(
+                $"[UR3 Snapshot] rad array: [{rad[0]:F4}, {rad[1]:F4}, {rad[2]:F4}, " +
+                $"{rad[3]:F4}, {rad[4]:F4}, {rad[5]:F4}]"
+            );
+        }
+
+        // Optional: end-effector world position — the Cartesian side of the
+        // contract. Useful for narrating "and even coordinates of the arm".
+        if (endEffector != null)
+        {
+            Vector3 p = endEffector.position;
+            Debug.Log($"[UR3 Snapshot] end-effector world pos (m): " +
+                      $"x={p.x:F3}  y={p.y:F3}  z={p.z:F3}");
+        }
     }
 
     static void SetDriveTarget(ArticulationBody joint, float targetDegrees)

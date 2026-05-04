@@ -3,6 +3,30 @@
   "WorkspaceRootPath": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\UR3PoseController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseRecorder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\UR3PoseRecorder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AutoScrollLog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\AutoScrollLog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\RosDebugLogSubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\RosDebugLogSubscriber.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UnityConsoleLogCapture.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\UnityConsoleLogCapture.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\LogTabSwitcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\LogTabSwitcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\GameStateManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Script\\GameStateManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -47,32 +71,105 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "GameStateManager.cs",
-              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\GameStateManager.cs",
-              "RelativeDocumentMoniker": "Assets\\Script\\GameStateManager.cs",
-              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\GameStateManager.cs",
-              "RelativeToolTip": "Assets\\Script\\GameStateManager.cs",
-              "ViewState": "AgIAAFUAAAAAAAAAAAAAwHAAAAAnAAAAAAAAAA==",
+              "Title": "UR3PoseController.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseController.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\UR3PoseController.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseController.cs",
+              "RelativeToolTip": "Assets\\Script\\UR3PoseController.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAiwDgAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-30T02:05:16.735Z",
+              "WhenOpened": "2026-05-02T07:43:44.635Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "AICoinSpawner.cs",
-              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AICoinSpawner.cs",
-              "RelativeDocumentMoniker": "Assets\\Script\\AICoinSpawner.cs",
-              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AICoinSpawner.cs",
-              "RelativeToolTip": "Assets\\Script\\AICoinSpawner.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAACYAAAA4AAAAAAAAAA==",
+              "Title": "UR3PoseRecorder.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseRecorder.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\UR3PoseRecorder.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UR3PoseRecorder.cs",
+              "RelativeToolTip": "Assets\\Script\\UR3PoseRecorder.cs",
+              "ViewState": "AgIAAKsAAAAAAAAAAAAiwNIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T11:15:22.168Z",
+              "WhenOpened": "2026-05-02T07:38:36.012Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "AutoScrollLog.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AutoScrollLog.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\AutoScrollLog.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AutoScrollLog.cs",
+              "RelativeToolTip": "Assets\\Script\\AutoScrollLog.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T02:55:10.732Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "LogTabSwitcher.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\LogTabSwitcher.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\LogTabSwitcher.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\LogTabSwitcher.cs",
+              "RelativeToolTip": "Assets\\Script\\LogTabSwitcher.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T01:47:45.144Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UnityConsoleLogCapture.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UnityConsoleLogCapture.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\UnityConsoleLogCapture.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\UnityConsoleLogCapture.cs",
+              "RelativeToolTip": "Assets\\Script\\UnityConsoleLogCapture.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T01:47:08.109Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "RosDebugLogSubscriber.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\RosDebugLogSubscriber.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\RosDebugLogSubscriber.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\RosDebugLogSubscriber.cs",
+              "RelativeToolTip": "Assets\\Script\\RosDebugLogSubscriber.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T01:46:33.904Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "GameStateManager.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\GameStateManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\GameStateManager.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\GameStateManager.cs",
+              "RelativeToolTip": "Assets\\Script\\GameStateManager.cs",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAAAIkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-30T02:05:16.735Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AICoinSpawner.cs",
+              "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AICoinSpawner.cs",
+              "RelativeDocumentMoniker": "Assets\\Script\\AICoinSpawner.cs",
+              "ToolTip": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\AICoinSpawner.cs",
+              "RelativeToolTip": "Assets\\Script\\AICoinSpawner.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAIBJwC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T11:15:22.168Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "CoinSnap.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\CoinSnap.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\CoinSnap.cs",
@@ -80,12 +177,11 @@
               "RelativeToolTip": "Assets\\Script\\CoinSnap.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T10:44:42.288Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-29T10:44:42.288Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 9,
               "Title": "ColumnDetector.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\ColumnDetector.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\ColumnDetector.cs",
@@ -93,12 +189,11 @@
               "RelativeToolTip": "Assets\\Script\\ColumnDetector.cs",
               "ViewState": "AgIAABsAAAAAAAAAAAAAADcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T10:44:17.398Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-29T10:44:17.398Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 10,
               "Title": "ROSInit.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\ROSInit.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\ROSInit.cs",
@@ -110,7 +205,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 11,
               "Title": "Handtracker.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\Hands\\Handtracker.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Hands\\Handtracker.cs",
@@ -122,7 +217,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "Handdatahud.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\Hands\\Handdatahud.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Hands\\Handdatahud.cs",
@@ -134,7 +229,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 13,
               "Title": "Handatalogger.cs",
               "DocumentMoniker": "C:\\Users\\saket\\Documents\\GitHub\\Robotics-Studio-2\\VR\\Assets\\Script\\Hands\\Handatalogger.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\Hands\\Handatalogger.cs",
