@@ -1,0 +1,96 @@
+# This .gitignore file should be placed at the root of your Unity project directory
+# Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
+
+.utmp/
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+*.log
+*.blend1
+*.blend1.meta
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Also ignore inside VR/ subfolder (since this is a monorepo)
+VR/[Ll]ibrary/
+VR/[Tt]emp/
+VR/[Oo]bj/
+VR/[Bb]uild/
+VR/[Bb]uilds/
+VR/[Ll]ogs/
+VR/[Uu]ser[Ss]ettings/
+VR/[Mm]emoryCaptures/
+VR/[Rr]ecordings/
+
+# Jetbrains Rider
+/[Aa]ssets/Plugins/Editor/JetBrains*
+*.DotSettings.user
+
+# Visual Studio cache
+.vs/
+
+# Gradle
+.gradle/
+
+# Unity solution/project files
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity meta files for ignored types
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Crash/system info
+sysinfo.txt
+mono_crash.*
+
+# Builds
+*.apk
+*.aab
+*.unitypackage
+*.unitypackage.meta
+*.app
+
+# Crashlytics
+crashlytics-build.properties
+
+# TestRunner
+InitTestScene*.unity*
+
+# Python (Connect4-ML)
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
