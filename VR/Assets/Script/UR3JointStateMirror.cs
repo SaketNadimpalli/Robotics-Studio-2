@@ -21,6 +21,14 @@ public class UR3JointStateMirror : MonoBehaviour
     [Range(1f, 30f)]
     public float smoothingSpeed = 10f;
 
+    public void SetMirrorActive(bool active)
+    {
+        _mirrorActive = active;
+        Debug.Log($"[UR3Mirror] Mirror {(active ? "ENABLED" : "DISABLED")}");
+    }
+
+    private bool _mirrorActive = true;
+
     // The UR3e joint names as published by ROS (order may vary in message!)
     private static readonly string[] UR3JointNames = {
         "shoulder_pan_joint",
@@ -30,6 +38,7 @@ public class UR3JointStateMirror : MonoBehaviour
         "wrist_2_joint",
         "wrist_3_joint"
     };
+
 
     // Latest angles received from ROS (degrees), indexed to match joints[]
     private float[] targetDegrees = new float[6];
@@ -69,7 +78,7 @@ public class UR3JointStateMirror : MonoBehaviour
 
     void Update()
     {
-        if (!hasReceivedData) return;
+        if (!hasReceivedData || !_mirrorActive) return;
 
         float maxStep = smoothingSpeed * Time.deltaTime;
 
