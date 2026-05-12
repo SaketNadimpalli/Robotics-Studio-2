@@ -37,6 +37,7 @@ public static class UR3eIKSolver
     static readonly float[] d = { 0.15185f, 0f, 0f, 0.13105f, 0.08535f, 0.0921f };
     static readonly float[] a = { 0f, -0.24355f, -0.2132f, 0f, 0f, 0f };
     static readonly float[] alpha = { Mathf.PI / 2f, 0f, 0f, Mathf.PI / 2f, -Mathf.PI / 2f, 0f };
+    static readonly float[] thetaOff = { 0f, Mathf.PI / 2f, 0f, Mathf.PI / 2f, Mathf.PI / 2f, 0f };
 
     // -------------------------------------------------------------------------
     // Joint limits (radians) — UR3e hardware limits
@@ -100,8 +101,8 @@ public static class UR3eIKSolver
         float psi1 = Mathf.Asin(ratio1);
 
         // Two shoulder solutions
-        float theta1_A = phi1 + psi1 + Mathf.PI / 2f;
-        float theta1_B = Mathf.PI - phi1 + psi1 + Mathf.PI / 2f; // shoulder-right
+        float theta1_A = phi1 + psi1;
+        float theta1_B = Mathf.PI - phi1 + psi1;
 
         // Pick the shoulder solution closest to current θ1
         float theta1 = PickClosest(currentAngles[0],
@@ -196,13 +197,11 @@ public static class UR3eIKSolver
         }
 
         // --- Build T01^-1 * T06 to extract the 2-3-4 subproblem ----------
-        Matrix4x4 T01 = DHMatrix(alpha[0], a[0], d[0], theta1);
+        Matrix4x4 T01 = DHMatrix(alpha[0], a[0], d[0], theta1 + thetaOff[0]);
         Matrix4x4 T01_inv = T01.inverse;
-
-        Matrix4x4 T56 = DHMatrix(alpha[5], a[5], d[5], theta6);
+        Matrix4x4 T56 = DHMatrix(alpha[5], a[5], d[5], theta6 + thetaOff[5]);
         Matrix4x4 T56_inv = T56.inverse;
-
-        Matrix4x4 T45 = DHMatrix(alpha[4], a[4], d[4], theta5);
+        Matrix4x4 T45 = DHMatrix(alpha[4], a[4], d[4], theta5 + thetaOff[4]);
         Matrix4x4 T45_inv = T45.inverse;
 
         // T14 = T01_inv * T06 * T56_inv * T45_inv
@@ -241,8 +240,22 @@ public static class UR3eIKSolver
         float theta4_B = SolveTheta4(T14, theta2_B, theta3_B);
 
         // Two elbow candidates — pick closest to current configuration
-        float[] candA = new float[] { theta1, theta2_A, theta3_A, theta4_A, theta5, theta6 };
-        float[] candB = new float[] { theta1, theta2_B, theta3_B, theta4_B, theta5, theta6 };
+        float[] candA = new float[] {
+            theta1  - thetaOff[0],
+            theta2_A - thetaOff[1],
+            theta3_A - thetaOff[2],
+            theta4_A - thetaOff[3],
+            theta5  - thetaOff[4],
+            theta6  - thetaOff[5]
+        };
+        float[] candB = new float[] {
+            theta1  - thetaOff[0],
+            theta2_B - thetaOff[1],
+            theta3_B - thetaOff[2],
+            theta4_B - thetaOff[3],
+            theta5  - thetaOff[4],
+            theta6  - thetaOff[5]
+        };
 
         bool validA = IsWithinLimits(candA);
         bool validB = IsWithinLimits(candB);
@@ -278,8 +291,8 @@ public static class UR3eIKSolver
     // -------------------------------------------------------------------------
     static float SolveTheta4(Matrix4x4 T14, float theta2, float theta3)
     {
-        Matrix4x4 T12 = DHMatrix(alpha[1], a[1], d[1], theta2);
-        Matrix4x4 T23 = DHMatrix(alpha[2], a[2], d[2], theta3);
+        Matrix4x4 T12 = DHMatrix(alpha[1], a[1], d[1], theta2 + thetaOff[1]);
+        Matrix4x4 T23 = DHMatrix(alpha[2], a[2], d[2], theta3 + thetaOff[2]);
         Matrix4x4 T13 = T12 * T23;
         Matrix4x4 T13_inv = T13.inverse;
         Matrix4x4 T34 = T13_inv * T14;

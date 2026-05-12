@@ -80,35 +80,24 @@ public class UR3TeleopDriver : MonoBehaviour
     // -------------------------------------------------------------------------
     void Update()
     {
-        // TEMP TEST — remove before final build
         if (Input.GetKeyDown(KeyCode.T))
             SetTeleopActive(!IsTeleopActive);
-
 
         if (!IsTeleopActive) return;
         if (rightHandTracker == null || !rightHandTracker.IsTracked) return;
 
-        // --- 1. Get hand pose in robot-base frame ----------------------------
         Vector3 handWorld = rightHandTracker.Position;
-        Quaternion handWorldRot = rightHandTracker.Rotation;
+        Vector3 baseWorldPos = joints[0].transform.position;
+        Vector3 handLocalPos = handWorld - baseWorldPos;
 
-        // InverseTransformPoint handles position + the 263° Y rotation of RobotBase
-        Vector3 handLocalPos = handWorld - robotBaseTransform.position;
-
-        Debug.Log($"[TeleopDriver] handLocalPos (Unity): ({handLocalPos.x:F3}, {handLocalPos.y:F3}, {handLocalPos.z:F3})");
-
-        // For rotation: un-rotate by the base transform
-        // --- 2. Convert Unity local frame → ROS/robot frame -----------------
         Vector3 robotPos = new Vector3(
              handLocalPos.z,
             -handLocalPos.x,
              handLocalPos.y
         );
 
-        // TEMP: lock EE orientation to fixed pose, isolating position tracking
         Quaternion robotRot = Quaternion.identity;
 
-        // --- 3. Smooth the target pose ---------------------------------------
         if (!_poseInitialised)
         {
             _smoothedPos = robotPos;
@@ -117,45 +106,21 @@ public class UR3TeleopDriver : MonoBehaviour
         }
         else
         {
-            _smoothedPos = Vector3.Lerp(_smoothedPos, robotPos,
-                                        1f - positionSmoothing);
-            _smoothedRot = Quaternion.Slerp(_smoothedRot, robotRot,
-                                            1f - rotationSmoothing);
+            _smoothedPos = Vector3.Lerp(_smoothedPos, robotPos, 1f - positionSmoothing);
+            _smoothedRot = Quaternion.Slerp(_smoothedRot, robotRot, 1f - rotationSmoothing);
         }
 
-        // --- 4. Read current joint angles from ArticulationBody --------------
         ReadCurrentAngles();
 
-        // --- 5. Call IK solver ----------------------------------------------
-        Debug.Log($"[TeleopDriver] IK input — pos: ({_smoothedPos.x:F3}, {_smoothedPos.y:F3}, {_smoothedPos.z:F3})");
         bool solved = UR3eIKSolver.Solve(
             _smoothedPos,
             _smoothedRot,
             _currentRadians,
             out float[] solvedRadians);
 
-        if (!solved)
-        {
-            // Hand is outside workspace — hold last position, don't thrash
-            if (logSolverResults)
-                Debug.LogWarning("[TeleopDriver] IK failed — holding last pose");
-            return;
-        }
+        if (!solved) return;
 
         SolvedAnglesRadians = solvedRadians;
-
-        if (logSolverResults)
-        {
-            Debug.Log("[TeleopDriver] IK solved: " +
-                      $"[{Rad2Deg(solvedRadians[0]):F1}, " +
-                      $"{Rad2Deg(solvedRadians[1]):F1}, " +
-                      $"{Rad2Deg(solvedRadians[2]):F1}, " +
-                      $"{Rad2Deg(solvedRadians[3]):F1}, " +
-                      $"{Rad2Deg(solvedRadians[4]):F1}, " +
-                      $"{Rad2Deg(solvedRadians[5]):F1}] deg");
-        }
-
-        // --- 6. Apply to ArticulationBody joints ----------------------------
         ApplyJointAngles(solvedRadians);
     }
 
@@ -198,9 +163,7 @@ public class UR3TeleopDriver : MonoBehaviour
         {
             if (joints[i] == null) continue;
             float deg = joints[i].xDrive.target;
-            // Undo the axis flips applied when writing, so solver sees
-            // angles in robot convention
-            if (i == 1 || i == 3) deg = -deg;
+            // NO un-flip needed
             _currentRadians[i] = deg * Mathf.Deg2Rad;
         }
     }
@@ -216,11 +179,9 @@ public class UR3TeleopDriver : MonoBehaviour
         {
             if (joints[i] == null) continue;
 
-            // Convert to degrees and apply axis flip
             float targetDeg = Rad2Deg(radians[i]);
-            if (i == 1 || i == 3) targetDeg = -targetDeg;
+            // NO sign flips — xDrive takes direct degrees
 
-            // Rate limit — prevent sudden large jumps
             var drive = joints[i].xDrive;
             float current = drive.target;
             float maxStep = maxJointSpeedDegPerSec * Time.deltaTime;
