@@ -4,8 +4,7 @@ import sys
 import random
 import io
 
-import pathlib
-CONNECT4_ML_DIR = str(pathlib.Path(__file__).resolve().parents[2] / 'Connect4-ML')
+CONNECT4_ML_DIR = '/mnt/c/Users/saket/Documents/GitHub/Robotics-Studio-2/Connect4-ML'
 sys.path.append(CONNECT4_ML_DIR)
 
 import rclpy
@@ -66,7 +65,10 @@ class Connect4AINode(Node):
             Int32, '/connect4/player_move', self.on_player_move, 10
         )
         self.ai_pub = self.create_publisher(
-            Int32, '/connect4/ai_move', 10
+            Int32, '/connect4/robot_move', 10
+        )
+        self.arm_execute_pub = self.create_publisher(
+            Int32, '/column_command', 10
         )
 
         # NEW
@@ -75,6 +77,10 @@ class Connect4AINode(Node):
         )
         self.reset_sub = self.create_subscription(
             Bool, '/connect4/reset', self.on_reset, 10
+        )
+        self.game_mode = 'IRL'  # default — only respond to player moves in IRL mode
+        self.mode_sub = self.create_subscription(
+            String, '/connect4/game_mode', self.on_game_mode, 10
         )
 
         self.get_logger().info(
@@ -103,7 +109,10 @@ class Connect4AINode(Node):
         self.debug_log_pub.publish(msg)
 
     def on_player_move(self, msg):
-        col = int(msg.data)
+        if self.game_mode != 'IRL':
+            self.get_logger().info('Ignoring player move — not in IRL mode')
+            return
+        col = int(msg.data) - 1  # convert from 1-based to 0-based
         self._log(f'Player played column {col}')
 
         if self.game.game_over:
@@ -139,8 +148,9 @@ class Connect4AINode(Node):
         self._log(f'AI plays column {ai_col}')
 
         out = Int32()
-        out.data = int(ai_col)
+        out.data = int(ai_col) + 1  # publish 1-based to match system convention
         self.ai_pub.publish(out)
+        self.arm_execute_pub.publish(out)  # also send to motion planner
 
         self._log(f'Board:\n{self.game.board}')
         self._publish_board()
@@ -162,6 +172,10 @@ class Connect4AINode(Node):
         self._publish_board() 
 
     # NEW: reset callback
+    def on_game_mode(self, msg):
+        self.game_mode = msg.data
+        self._log(f'Game mode set to: {self.game_mode}')
+
     def on_reset(self, msg):
         self.game.reset()
         self._log('=== Game reset ===')

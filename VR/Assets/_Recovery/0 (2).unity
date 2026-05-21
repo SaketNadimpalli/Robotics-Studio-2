@@ -204,6 +204,61 @@ Transform:
   m_Children: []
   m_Father: {fileID: 949870860}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &71326594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 71326596}
+  - component: {fileID: 71326595}
+  m_Layer: 0
+  m_Name: IRLHumanCoinSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &71326595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71326594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 710a7462296d2c9449649abe943b301d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IRLHumanCoinSpawner
+  coinPrefab: {fileID: 5937264438293206950, guid: 988ce523021d28f449c91ddc69f2cc3d, type: 3}
+  humanCoinMaterial: {fileID: 2100000, guid: d90ed5a030b04074197e57cd8f8bce34, type: 2}
+  columns:
+  - {fileID: 155226863}
+  - {fileID: 1615687946}
+  - {fileID: 1494404057}
+  - {fileID: 2008960695}
+  - {fileID: 1291093105}
+  - {fileID: 555178665}
+  - {fileID: 949870860}
+  spawnHeightOffset: 0.5
+--- !u!4 &71326596
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71326594}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.11881, y: 1.09753, z: -0.25382}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &74767023
 GameObject:
   m_ObjectHideFlags: 8
@@ -12861,61 +12916,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1615687946}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1402941383
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1402941385}
-  - component: {fileID: 1402941384}
-  m_Layer: 0
-  m_Name: IRLHumanCoinSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1402941384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402941383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 710a7462296d2c9449649abe943b301d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IRLHumanCoinSpawner
-  coinPrefab: {fileID: 5937264438293206950, guid: 988ce523021d28f449c91ddc69f2cc3d, type: 3}
-  humanCoinMaterial: {fileID: 2100000, guid: d90ed5a030b04074197e57cd8f8bce34, type: 2}
-  columns:
-  - {fileID: 155226863}
-  - {fileID: 1615687946}
-  - {fileID: 1494404057}
-  - {fileID: 2008960695}
-  - {fileID: 1291093105}
-  - {fileID: 555178665}
-  - {fileID: 949870860}
-  spawnHeightOffset: 0.1
---- !u!4 &1402941385
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402941383}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0112, y: 1.24276, z: -0.29288}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1406285614
 Mesh:
   m_ObjectHideFlags: 0
@@ -14529,7 +14529,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2218496723442559053, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.662
+      value: -0.785
       objectReference: {fileID: 0}
     - target: {fileID: 2218496723442559053, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_LocalRotation.w
@@ -18280,6 +18280,7 @@ SceneRoots:
   - {fileID: 1214128476}
   - {fileID: 661007205}
   - {fileID: 223355318}
+  - {fileID: 71326596}
   - {fileID: 1027471661}
   - {fileID: 1501376820}
   - {fileID: 917195467}
@@ -18294,4 +18295,3 @@ SceneRoots:
   - {fileID: 1932111416}
   - {fileID: 1075679431}
   - {fileID: 917431503}
-  - {fileID: 1402941385}

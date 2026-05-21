@@ -4,7 +4,8 @@ public class CoinSnap : MonoBehaviour
 {
     private Rigidbody rb;
     public bool hasSnapped = false;
-    public bool isAICoin = false;   // NEW
+    public bool isAICoin = false;
+    public bool isIRLMirrorCoin = false; // spawned by IRLHumanCoinSpawner — ignore in ColumnDetector
 
     [Header("Snap Settings")]
     public float snapDelay = 0.5f;

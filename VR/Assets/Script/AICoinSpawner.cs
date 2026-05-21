@@ -10,14 +10,14 @@ public class AICoinSpawner : MonoBehaviour
     [Header("Optional: material for AI coins (overrides prefab material)")]
     public Material aiCoinMaterial;
 
-    [Header("Column transforms — assign Column_1..Column_7 in order")]
+    [Header("Column transforms ï¿½ assign Column_1..Column_7 in order")]
     public Transform[] columns = new Transform[7];
 
     [Header("Spawn height above the column trigger")]
     public float spawnHeightOffset = 0.5f;
 
     [Header("ROS")]
-    public string aiMoveTopic = "/connect4/ai_move";
+    public string aiMoveTopic = "/connect4/robot_move";
     private ROSConnection ros;
 
     void Start()
@@ -29,7 +29,7 @@ public class AICoinSpawner : MonoBehaviour
 
     void OnAIMove(Int32Msg msg)
     {
-        int col = msg.data;
+        int col = msg.data - 1;
         if (col < 0 || col >= columns.Length || columns[col] == null)
         {
             Debug.LogWarning($"Invalid AI column {col}");

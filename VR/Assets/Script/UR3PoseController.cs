@@ -107,6 +107,7 @@ public class UR3PoseController : MonoBehaviour
     {
         if (JointsUnassigned())
             AutoFindJoints();
+        GoToPose(0);
     }
 
     void Update()

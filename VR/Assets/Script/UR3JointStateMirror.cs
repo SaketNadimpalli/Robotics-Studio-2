@@ -9,7 +9,7 @@ using RosMessageTypes.Sensor;
 /// </summary>
 public class UR3JointStateMirror : MonoBehaviour
 {
-    [Header("ArticulationBody joints — drag in Inspector order:")]
+    [Header("ArticulationBody joints ï¿½ drag in Inspector order:")]
     [Tooltip("shoulder_pan, shoulder_lift, elbow, wrist_1, wrist_2, wrist_3")]
     public ArticulationBody[] joints = new ArticulationBody[6];
 
@@ -27,7 +27,7 @@ public class UR3JointStateMirror : MonoBehaviour
         Debug.Log($"[UR3Mirror] Mirror {(active ? "ENABLED" : "DISABLED")}");
     }
 
-    private bool _mirrorActive = true;
+    [SerializeField] private bool _mirrorActive = true;
 
     // The UR3e joint names as published by ROS (order may vary in message!)
     private static readonly string[] UR3JointNames = {
@@ -68,7 +68,7 @@ public class UR3JointStateMirror : MonoBehaviour
         {
             if (nameToIndex.TryGetValue(UR3JointNames[j], out int rosIdx))
             {
-                // ROS uses radians — convert to degrees for ArticulationBody
+                // ROS uses radians ï¿½ convert to degrees for ArticulationBody
                 float rosRad = (float)msg.position[rosIdx];
                 targetDegrees[j] = ROSToUnityAngle(j, rosRad);
             }
@@ -107,14 +107,7 @@ public class UR3JointStateMirror : MonoBehaviour
 
         // Joints 1 and 3 (shoulder_lift, wrist_1) need sign flip because
         // the URDF Importer mirrors those axes into Unity's left-handed frame.
-        // Verify these experimentally with your specific import — see section 3.
-        switch (jointIndex)
-        {
-            case 1: // shoulder_lift
-            case 3: // wrist_1
-                return -deg;
-            default:
-                return deg;
-        }
+        // Verify these experimentally with your specific import ï¿½ see section 3.
+        return deg;
     }
 }

@@ -96,7 +96,8 @@ desktop.ini
 .vscode/
 /.claude
 
-# ROS2 build artifacts — these live in ~/connect4_ws on each machine, not here
-ros_ws/build/
-ros_ws/install/
-ros_ws/log/
+# ROS2 build artifacts — generated per machine, never commit
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+ros2_ws/src/ros_tcp_endpoint/

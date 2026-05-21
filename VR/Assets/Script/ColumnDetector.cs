@@ -7,7 +7,7 @@ public class ColumnDetector : MonoBehaviour
     [Header("Row Slots - assign Row_1 to Row_6 in order bottom to top")]
     public Transform[] rows = new Transform[6];
 
-    [Header("Column index 0..6 � set per column in Inspector")]
+    [Header("Column index 0..6 � set per column in Inspector")]
     public int columnIndex = 0;
 
     private bool[] occupiedRows = new bool[6];
@@ -24,9 +24,11 @@ public class ColumnDetector : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (GameStateManager.IsGameOver) return;
         if (!other.CompareTag("Coin")) return;
         CoinSnap coin = other.GetComponent<CoinSnap>();
         if (coin == null || coin.hasSnapped) return;
+        if (!coin.isAICoin && !coin.isIRLMirrorCoin && !GameStateManager.IsPlayerTurn) return;
 
         for (int i = 0; i < rows.Length; i++)
         {
@@ -35,12 +37,18 @@ public class ColumnDetector : MonoBehaviour
                 occupiedRows[i] = true;
                 coin.SnapToSlot(rows[i]);
 
-                // Only publish player moves for human-thrown coins
-                if (!coin.isAICoin)
+                if (!coin.isAICoin && !coin.isIRLMirrorCoin)
                 {
-                    Int32Msg msg = new Int32Msg(columnIndex);
+                    // Real VR player coin — publish move and lock turn
+                    Int32Msg msg = new Int32Msg(columnIndex + 1);
                     ros.Publish(playerMoveTopic, msg);
                     Debug.Log($"Published player move: column {columnIndex}");
+                    GameStateManager.Instance?.PlayerMoved();
+                }
+                else if (coin.isIRLMirrorCoin)
+                {
+                    // IRL mirror coin — no publish, but hand turn back to VR player
+                    GameStateManager.Instance?.IRLMirrorCoinLanded();
                 }
                 return;
             }

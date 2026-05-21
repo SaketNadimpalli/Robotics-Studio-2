@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Robotics.ROSTCPConnector;
@@ -5,85 +6,204 @@ using RosMessageTypes.Std;
 
 public class GameStateManager : MonoBehaviour
 {
-    [Header("Drag all 7 ColumnDetector components here")]
+    // -------------------------------------------------------------------------
+    // Singleton
+    // -------------------------------------------------------------------------
+    public static GameStateManager Instance { get; private set; }
+
+    // -------------------------------------------------------------------------
+    // Inspector fields
+    // -------------------------------------------------------------------------
+    [Header("Column detectors — drag all 7 in order")]
     public ColumnDetector[] columnDetectors;
 
-    [Header("ROS topics")]
-    public string gameOverTopic = "/connect4/game_over";
-    public string resetTopic = "/connect4/reset";
+    [Header("HUD")]
+    public Connect4VRHud hud;
 
-    private ROSConnection ros;
+    [Header("Player coin respawning")]
+    public PlayerCoinSpawner playerCoinSpawner;
+
+    [Header("ROS topics")]
+    public string gameOverTopic  = "/connect4/game_over";
+    public string resetTopic     = "/connect4/reset";
+    public string aiMoveTopic    = "/connect4/robot_move";
+
+    [Header("Sync detection")]
+    public float slotDetectionRadius = 0.05f;
+    public float syncCheckDelay      = 2.0f;
+
+    // -------------------------------------------------------------------------
+    // Public state
+    // -------------------------------------------------------------------------
+    public static bool IsGameOver { get; private set; }
+    public static bool IsPlayerTurn { get; private set; } = true;
+
+    // -------------------------------------------------------------------------
+    // Private
+    // -------------------------------------------------------------------------
+    ROSConnection _ros;
+    string        _lastPythonBoard;
+
+    // -------------------------------------------------------------------------
+    // Unity messages
+    // -------------------------------------------------------------------------
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
 
     void Start()
     {
-        ros = ROSConnection.GetOrCreateInstance();
-        ros.Subscribe<Int32Msg>(gameOverTopic, OnGameOver);
-        ros.Subscribe<StringMsg>("/connect4/board_state", OnBoardState);
-        ros.RegisterPublisher<BoolMsg>(resetTopic);
+        _ros = ROSConnection.GetOrCreateInstance();
+        _ros.Subscribe<Int32Msg>(gameOverTopic, OnGameOver);
+        _ros.Subscribe<StringMsg>("/connect4/board_state", OnBoardState);
+        _ros.Subscribe<Int32Msg>(aiMoveTopic, OnAIMove);
+        _ros.RegisterPublisher<BoolMsg>(resetTopic);
         Debug.Log("GameStateManager ready");
     }
 
     void Update()
     {
-        // Press R to reset (Editor / keyboard testing)
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
-        {
             ResetGame();
+    }
+
+    // -------------------------------------------------------------------------
+    // Turn tracking — called by ColumnDetector after a player coin lands
+    // -------------------------------------------------------------------------
+    public void PlayerMoved()
+    {
+        IsPlayerTurn = false;
+        hud?.SetTurn(false);
+        hud?.SetRobotStatus("Thinking...");
+    }
+
+    // Called when the AI move message arrives (coin is about to be spawned)
+    void OnAIMove(Int32Msg msg)
+    {
+        hud?.SetRobotStatus("Moving");
+        // Give the coin a moment to fall and snap, then hand back to player
+        Invoke(nameof(HandBackToPlayer), 2f);
+    }
+
+    // Called by ColumnDetector when an IRL mirror coin snaps (Mode 3)
+    // — no robot_move is published in that mode, so we hand back manually
+    public void IRLMirrorCoinLanded()
+    {
+        CancelInvoke(nameof(HandBackToPlayer));
+        Invoke(nameof(HandBackToPlayer), 2f);
+    }
+
+    void HandBackToPlayer()
+    {
+        if (!IsGameOver)
+        {
+            IsPlayerTurn = true;
+            hud?.SetTurn(true);
+            hud?.SetRobotStatus("Idle");
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Game over
+    // -------------------------------------------------------------------------
     void OnGameOver(Int32Msg msg)
     {
+        IsGameOver = true;
         int winner = msg.data;
+
         if (winner == 0) Debug.Log("=== GAME OVER: DRAW ===");
         else if (winner == 1) Debug.Log("=== GAME OVER: You win! ===");
         else if (winner == 2) Debug.Log("=== GAME OVER: AI wins! ===");
         else Debug.LogWarning($"Unknown winner code: {winner}");
+
+        hud?.ShowWinner(winner);
+
+        if (winner != 0)
+        {
+            int playerCode = (winner == 1) ? 1 : 2;
+            List<(int r, int c)> winCells = FindWinningCells(playerCode);
+            if (winCells != null)
+                hud?.HighlightCoins(CoinObjectsAt(winCells));
+        }
     }
 
-    [Header("Sync detection")]
-    public float slotDetectionRadius = 0.05f;  // tune to your coin/slot scale
-    public float syncCheckDelay = 2.0f;  // seconds to wait after a move before checking sync
+    // -------------------------------------------------------------------------
+    // Reset
+    // -------------------------------------------------------------------------
+    public void ResetGame()
+    {
+        Debug.Log("Resetting game...");
+        IsGameOver = false;
+        IsPlayerTurn = true;
+        CancelInvoke(nameof(HandBackToPlayer));
 
-    private string lastPythonBoard;
+        // Destroy all coins
+        foreach (var coin in GameObject.FindGameObjectsWithTag("Coin"))
+            Destroy(coin);
 
+        // Clear column states
+        foreach (var d in columnDetectors)
+            if (d != null) d.ResetState();
+
+        // Respawn player coins
+        if (playerCoinSpawner != null)
+            playerCoinSpawner.SpawnCoins();
+        else
+            Debug.LogWarning("[GameStateManager] PlayerCoinSpawner not set — coins not respawned.");
+
+        hud?.ResetHUD();
+        _ros.Publish(resetTopic, new BoolMsg(true));
+    }
+
+    // -------------------------------------------------------------------------
+    // Board sync
+    // -------------------------------------------------------------------------
+    void OnBoardState(StringMsg msg)
+    {
+        _lastPythonBoard = msg.data;
+        CancelInvoke(nameof(CheckSync));
+        Invoke(nameof(CheckSync), syncCheckDelay);
+    }
+
+    void CheckSync()
+    {
+        if (_lastPythonBoard == null) return;
+        string unityBoard = FormatBoard(DeriveBoardFromScene());
+        if (unityBoard == _lastPythonBoard)
+            Debug.Log("Board (in sync):\n" + _lastPythonBoard);
+        else
+            Debug.LogWarning("DESYNC DETECTED\nPython:\n" + _lastPythonBoard + "\nUnity:\n" + unityBoard);
+    }
+
+    // -------------------------------------------------------------------------
+    // Board helpers
+    // -------------------------------------------------------------------------
     int[,] DeriveBoardFromScene()
     {
         int[,] board = new int[6, 7];
-
-        GameObject[] coins = GameObject.FindGameObjectsWithTag("Coin");
-        foreach (var coin in coins)
+        foreach (var coin in GameObject.FindGameObjectsWithTag("Coin"))
         {
             var snap = coin.GetComponent<CoinSnap>();
             if (snap == null || !snap.hasSnapped) continue;
 
-            // Find the closest slot anywhere on the board for this coin
             float bestDist = float.MaxValue;
-            int bestCol = -1, bestUnityRow = -1;
-
+            int bestCol = -1, bestRow = -1;
             for (int col = 0; col < columnDetectors.Length; col++)
             {
-                var detector = columnDetectors[col];
-                if (detector == null) continue;
-                for (int unityRow = 0; unityRow < detector.rows.Length; unityRow++)
+                var det = columnDetectors[col];
+                if (det == null) continue;
+                for (int row = 0; row < det.rows.Length; row++)
                 {
-                    if (detector.rows[unityRow] == null) continue;
-                    float d = Vector3.Distance(
-                        coin.transform.position,
-                        detector.rows[unityRow].position
-                    );
-                    if (d < bestDist) { bestDist = d; bestCol = col; bestUnityRow = unityRow; }
+                    if (det.rows[row] == null) continue;
+                    float d = Vector3.Distance(coin.transform.position, det.rows[row].position);
+                    if (d < bestDist) { bestDist = d; bestCol = col; bestRow = row; }
                 }
             }
-
-            // Sanity threshold: only count if the coin is reasonably near a slot
             if (bestCol >= 0 && bestDist < 0.5f)
-            {
-                int pyRow = 5 - bestUnityRow;
-                board[pyRow, bestCol] = snap.isAICoin ? 2 : 1;
-            }
+                board[5 - bestRow, bestCol] = snap.isAICoin ? 2 : 1;
         }
-
         return board;
     }
 
@@ -102,41 +222,63 @@ public class GameStateManager : MonoBehaviour
         return sb.ToString();
     }
 
-    void OnBoardState(StringMsg msg)
+    // -------------------------------------------------------------------------
+    // Win detection — finds the 4 cells that form the winning line
+    // -------------------------------------------------------------------------
+    List<(int r, int c)> FindWinningCells(int playerCode)
     {
-        lastPythonBoard = msg.data;
-        CancelInvoke(nameof(CheckSync));         // if a new board arrives, restart the timer
-        Invoke(nameof(CheckSync), syncCheckDelay);
+        int[,] board = DeriveBoardFromScene();
+
+        // Four directions: horizontal, vertical, diagonal down-right, diagonal down-left
+        int[] drs = {  0, 1, 1,  1 };
+        int[] dcs = {  1, 0, 1, -1 };
+
+        for (int r = 0; r < 6; r++)
+        {
+            for (int c = 0; c < 7; c++)
+            {
+                for (int d = 0; d < 4; d++)
+                {
+                    var cells = new List<(int, int)>();
+                    bool win = true;
+                    for (int k = 0; k < 4; k++)
+                    {
+                        int nr = r + drs[d] * k;
+                        int nc = c + dcs[d] * k;
+                        if (nr < 0 || nr >= 6 || nc < 0 || nc >= 7 || board[nr, nc] != playerCode)
+                        { win = false; break; }
+                        cells.Add((nr, nc));
+                    }
+                    if (win) return cells;
+                }
+            }
+        }
+        return null;
     }
 
-    void CheckSync()
+    // Given board (row,col) pairs, find the matching coin GameObjects in the scene
+    List<GameObject> CoinObjectsAt(List<(int r, int c)> cells)
     {
-        if (lastPythonBoard == null) return;
-        string unityBoard = FormatBoard(DeriveBoardFromScene());
-        if (unityBoard == lastPythonBoard)
-            Debug.Log("Board (in sync):\n" + lastPythonBoard);
-        else
-            Debug.LogWarning("DESYNC DETECTED\nPython:\n" + lastPythonBoard + "\nUnity:\n" + unityBoard);
-    }
-
-    public void ResetGame()
-    {
-        Debug.Log("Resetting game...");
-
-        // Destroy all coins in scene (player + AI alike)
-        GameObject[] coins = GameObject.FindGameObjectsWithTag("Coin");
-        foreach (var coin in coins)
+        var result = new List<GameObject>();
+        foreach (var (r, c) in cells)
         {
-            Destroy(coin);
-        }
+            if (c >= columnDetectors.Length || columnDetectors[c] == null) continue;
+            int unityRow = 5 - r;
+            var det = columnDetectors[c];
+            if (unityRow >= det.rows.Length || det.rows[unityRow] == null) continue;
+            Vector3 slotPos = det.rows[unityRow].position;
 
-        // Clear each column's row state
-        foreach (var detector in columnDetectors)
-        {
-            if (detector != null) detector.ResetState();
+            // Find coin closest to this slot
+            float best = float.MaxValue;
+            GameObject bestCoin = null;
+            foreach (var coin in GameObject.FindGameObjectsWithTag("Coin"))
+            {
+                float d = Vector3.Distance(coin.transform.position, slotPos);
+                if (d < best) { best = d; bestCoin = coin; }
+            }
+            if (bestCoin != null && best < 0.5f)
+                result.Add(bestCoin);
         }
-
-        // Tell Python to reset its game state
-        ros.Publish(resetTopic, new BoolMsg(true));
+        return result;
     }
 }
