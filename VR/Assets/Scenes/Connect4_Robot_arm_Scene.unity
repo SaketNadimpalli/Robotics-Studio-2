@@ -1655,7 +1655,7 @@ MonoBehaviour:
   - {fileID: 897225128}
   - {fileID: 357235365}
   columnIndex: 0
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!1 &161218732
 GameObject:
   m_ObjectHideFlags: 0
@@ -5154,7 +5154,7 @@ MonoBehaviour:
   - {fileID: 88353610}
   - {fileID: 1109282448}
   columnIndex: 5
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!65 &555178667
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8862,7 +8862,7 @@ MonoBehaviour:
   - {fileID: 1600651284}
   - {fileID: 58619106}
   columnIndex: 6
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!65 &949870862
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11820,7 +11820,7 @@ MonoBehaviour:
   - {fileID: 1140802294}
   - {fileID: 1744665692}
   columnIndex: 4
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!65 &1291093107
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13526,7 +13526,7 @@ MonoBehaviour:
   - {fileID: 744665280}
   - {fileID: 2004292130}
   columnIndex: 2
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!65 &1494404059
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14481,7 +14481,7 @@ MonoBehaviour:
   - {fileID: 1508464482}
   - {fileID: 831131053}
   columnIndex: 1
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!65 &1615687948
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17389,7 +17389,7 @@ MonoBehaviour:
   - {fileID: 1570899393}
   - {fileID: 1797169411}
   columnIndex: 3
-  playerMoveTopic: /connect4/player_move
+  playerMoveTopic: /connect4/vr_player_move
 --- !u!65 &2008960697
 BoxCollider:
   m_ObjectHideFlags: 0

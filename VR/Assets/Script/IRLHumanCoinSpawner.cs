@@ -32,9 +32,9 @@ public class IRLHumanCoinSpawner : MonoBehaviour
 
     void OnIRLHumanMove(Int32Msg msg)
     {
-        // Only mirror the move when it is actually the IRL human's turn
-        // (IsPlayerTurn == true means it's the VR player's turn — reject)
-        if (GameStateManager.IsPlayerTurn)
+        // In XR mode (IRL vs VR), only mirror when it is actually the IRL human's turn.
+        // In IRL mode (IRL vs AI), always mirror — VR is spectating and has no turns.
+        if (GameStateManager.CurrentGameMode == "XR" && GameStateManager.IsPlayerTurn)
         {
             Debug.LogWarning("IRLHumanCoinSpawner: ignoring move — it is the VR player's turn");
             return;

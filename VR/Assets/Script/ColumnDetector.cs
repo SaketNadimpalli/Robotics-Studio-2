@@ -13,7 +13,7 @@ public class ColumnDetector : MonoBehaviour
     private bool[] occupiedRows = new bool[6];
 
     [Header("ROS")]
-    public string playerMoveTopic = "/connect4/player_move";
+    public string playerMoveTopic = "/connect4/vr_player_move";
     private ROSConnection ros;
 
     void Start()

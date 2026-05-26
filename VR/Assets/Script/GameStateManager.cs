@@ -37,6 +37,8 @@ public class GameStateManager : MonoBehaviour
     // -------------------------------------------------------------------------
     public static bool IsGameOver { get; private set; }
     public static bool IsPlayerTurn { get; private set; } = true;
+    public static string CurrentGameMode { get; private set; } = "IRL"; // "IRL" or "XR"
+    public static string CurrentDifficulty { get; private set; } = "Easy"; // "Easy" or "Hard"
 
     // -------------------------------------------------------------------------
     // Private
@@ -59,6 +61,9 @@ public class GameStateManager : MonoBehaviour
         _ros.Subscribe<Int32Msg>(gameOverTopic, OnGameOver);
         _ros.Subscribe<StringMsg>("/connect4/board_state", OnBoardState);
         _ros.Subscribe<Int32Msg>(aiMoveTopic, OnAIMove);
+        _ros.Subscribe<StringMsg>("/connect4/game_mode", OnGameMode);
+        _ros.Subscribe<StringMsg>("/connect4/game_difficulty", OnGameDifficulty);
+        _ros.Subscribe<BoolMsg>("/connect4/game_start", OnGameStart);
         _ros.RegisterPublisher<BoolMsg>(resetTopic);
         Debug.Log("GameStateManager ready");
     }
@@ -103,6 +108,40 @@ public class GameStateManager : MonoBehaviour
             hud?.SetTurn(true);
             hud?.SetRobotStatus("Idle");
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Game mode
+    // -------------------------------------------------------------------------
+    void OnGameMode(StringMsg msg)
+    {
+        CurrentGameMode = msg.data;
+        Debug.Log($"Game mode set to: {CurrentGameMode}");
+    }
+
+    void OnGameDifficulty(StringMsg msg)
+    {
+        CurrentDifficulty = msg.data;
+        Debug.Log($"Game difficulty set to: {CurrentDifficulty}");
+    }
+
+    void OnGameStart(BoolMsg msg)
+    {
+        if (!msg.data) return;
+        IsGameOver = false;
+        CancelInvoke(nameof(HandBackToPlayer));
+
+        // In XR Easy mode the IRL human goes first — VR player must wait
+        // In XR Hard mode the VR player goes first
+        // In IRL mode VR is spectating so turn lock doesn't matter
+        if (CurrentGameMode == "XR")
+            IsPlayerTurn = CurrentDifficulty == "Hard";
+        else
+            IsPlayerTurn = true;
+
+        Debug.Log($"Game started — IsPlayerTurn: {IsPlayerTurn}");
+        hud?.ResetHUD();
+        hud?.SetTurn(IsPlayerTurn);
     }
 
     // -------------------------------------------------------------------------
