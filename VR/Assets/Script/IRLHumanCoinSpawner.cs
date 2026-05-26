@@ -32,6 +32,7 @@ public class IRLHumanCoinSpawner : MonoBehaviour
 
     void OnIRLHumanMove(Int32Msg msg)
     {
+        Debug.Log($"IRLHumanCoinSpawner: received detected_human_move col={msg.data} mode={GameStateManager.CurrentGameMode} isPlayerTurn={GameStateManager.IsPlayerTurn} isGameOver={GameStateManager.IsGameOver}");
         // In XR mode (IRL vs VR), only mirror when it is actually the IRL human's turn.
         // In IRL mode (IRL vs AI), always mirror — VR is spectating and has no turns.
         if (GameStateManager.CurrentGameMode == "XR" && GameStateManager.IsPlayerTurn)

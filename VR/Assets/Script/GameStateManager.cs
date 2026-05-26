@@ -72,6 +72,9 @@ public class GameStateManager : MonoBehaviour
     {
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             ResetGame();
+
+        if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
+            RespawnPlayerCoins();
     }
 
     // -------------------------------------------------------------------------
@@ -166,6 +169,28 @@ public class GameStateManager : MonoBehaviour
             if (winCells != null)
                 hud?.HighlightCoins(CoinObjectsAt(winCells));
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Respawn player coins only — does NOT reset the board or game state.
+    // Press C to top up the tray mid-game without disturbing placed coins.
+    // -------------------------------------------------------------------------
+    public void RespawnPlayerCoins()
+    {
+        // Destroy only unsnapped, non-AI, non-mirror coins (i.e. the grabbable tray coins)
+        foreach (var coin in GameObject.FindGameObjectsWithTag("Coin"))
+        {
+            var snap = coin.GetComponent<CoinSnap>();
+            if (snap != null && !snap.hasSnapped && !snap.isAICoin && !snap.isIRLMirrorCoin)
+                Destroy(coin);
+        }
+
+        if (playerCoinSpawner != null)
+            playerCoinSpawner.SpawnCoins();
+        else
+            Debug.LogWarning("[GameStateManager] PlayerCoinSpawner not set — coins not respawned.");
+
+        Debug.Log("Player coins respawned (board untouched).");
     }
 
     // -------------------------------------------------------------------------
