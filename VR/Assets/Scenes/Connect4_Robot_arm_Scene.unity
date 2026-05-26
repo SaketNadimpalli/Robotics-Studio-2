@@ -2330,7 +2330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AICoinSpawner
   coinPrefab: {fileID: 5937264438293206950, guid: 988ce523021d28f449c91ddc69f2cc3d, type: 3}
-  aiCoinMaterial: {fileID: 2100000, guid: d90ed5a030b04074197e57cd8f8bce34, type: 2}
+  aiCoinMaterial: {fileID: 2100000, guid: 464ca26e85680034f971cad935add773, type: 2}
   columns:
   - {fileID: 155226863}
   - {fileID: 1615687946}
